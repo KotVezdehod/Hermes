@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="..\include\IMemoryManager.h">
+      <Filter>AddIn</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\types.h">
+      <Filter>AddIn</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\AddInDefBase.h">
+      <Filter>AddIn</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\addinlib.h">
+      <Filter>AddIn</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\com.h">
+      <Filter>AddIn</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ComponentBase.h">
+      <Filter>AddIn</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\IAndroidComponentHelper.h">
+      <Filter>AddIn</Filter>
+    </ClInclude>
+    <ClInclude Include="..\jni\jnienv.h">
+      <Filter>jni</Filter>
+    </ClInclude>
+    <ClInclude Include="ConversionWchar.h" />
+    <ClInclude Include="AddInNative.h" />
+    <ClInclude Include="SendData.h" />
+    <ClInclude Include="Compressor.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="AddIn">
+      <UniqueIdentifier>{1e06421d-76a4-444d-afee-127c7f5ef659}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="jni">
+      <UniqueIdentifier>{7f683bce-596c-489e-979a-db7d9f7d8531}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Package">
+      <UniqueIdentifier>{98d1717e-51e8-4d2f-b1f7-34e7a52437dc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\jni\jnienv.cpp">
+      <Filter>jni</Filter>
+    </ClCompile>
+    <ClCompile Include="AddInNative.cpp" />
+    <ClCompile Include="ConversionWchar.cpp" />
+    <ClCompile Include="SendData.cpp" />
+    <ClCompile Include="Compressor.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\Package\manifest.xml">
+      <Filter>Package</Filter>
+    </Xml>
+  </ItemGroup>
+</Project>
