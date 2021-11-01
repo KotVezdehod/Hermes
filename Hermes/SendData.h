@@ -45,4 +45,5 @@ public:
 	/*void MakeAPhoto(int xSize, int ySize, int Quality, tVariant* pvarRetValue);
 	void RequestPhotoPermissions(tVariant* pvarRetValue);*/
 	void RefactorImage(wchar_t *fn_in, wchar_t* fn_out, int xSize, int ySize, int Quality, tVariant* pvarRetValue);
+	void DecodeBarcode(tVariant* paParams, tVariant* pvarRetValue);
 };

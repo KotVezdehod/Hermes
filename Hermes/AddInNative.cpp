@@ -9,17 +9,22 @@
 #include <iostream>
 #include "../jni/jnienv.h"
 #include "../include/IAndroidComponentHelper.h"
+#include "Json.h"
+#include <codecvt>
+#include <dirent.h>
+
 
 using std::string;
 using std::wstring;
-
-
+using std::wstring_convert;
+using std::codecvt_utf8_utf16;
 
 static const wchar_t g_ComponentNameAddIn[] = L"Hermes";
 static WcharWrapper s_ComponentClass(g_ComponentNameAddIn);
 // This component supports 2.1 version
 const long g_VersionAddIn = 2100;
 static AppCapabilities g_capabilities = eAppCapabilitiesInvalid;
+
 
 //---------------------------------------------------------------------------//
 long GetClassObject(const WCHAR_T* wsName, IComponentBase** pInterface)
@@ -63,6 +68,7 @@ Hermes::Hermes() : m_iConnect(nullptr), m_iMemory(nullptr), isScreenOn(false)
 
 Hermes::~Hermes()
 {
+	delete mFileWorks;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -78,6 +84,7 @@ bool Hermes::Init(void* pConnection)
 bool Hermes::setMemManager(void* mem)
 {
 	m_iMemory = (IMemoryManager*)mem;
+	mFileWorks = new FileWorks(m_iMemory);
 	return m_iMemory != nullptr;
 }
 
@@ -346,10 +353,28 @@ long Hermes::GetNParams(const long lMethodNum)
 		return 2;
 	case eMethZLIBDecompressFile:
 		return 2;
-	/*case eMethTakeAPhoto:
-		return 3;*/
 	case eMethPHOTORefactorImage:
 		return 5;
+	case eMethDecodeBarcode:
+		return 1;
+	case eMethScanFolder:
+		return 1;
+	case eMethIsDirectory:
+		return 1;
+	case eMethDeleteFileOrDirectory:
+		return 1;
+	case eMethCreateFile:
+		return 1;
+	case eMethCreateDirectory:
+		return 2;
+	case eMethRenameFileOrDirectory:
+		return 2;
+	case eMethWriteDataToFile:
+		return 2;
+	case eMethFSOPresent:
+		return 1;
+	case eMethReadDataFromFile:
+		return 1;
 	default:
 		return 0;
 	}
@@ -395,11 +420,29 @@ bool Hermes::HasRetVal(const long lMethodNum)
 		return true;
 	case eMethZLIBDecompressFile:
 		return true;
-	/*case eMethTakeAPhoto:
-		return true;
-	case eMethRequestPhotoPermissions:
-		return true;*/
 	case eMethPHOTORefactorImage:
+		return true;
+	case eMethVersion:
+		return true;
+	case eMethDecodeBarcode:
+		return true;
+	case eMethScanFolder:
+		return true;
+	case eMethIsDirectory:
+		return true;
+	case eMethDeleteFileOrDirectory:
+		return true;
+	case eMethCreateFile:
+		return true;
+	case eMethCreateDirectory:
+		return true;
+	case eMethRenameFileOrDirectory:
+		return true;
+	case eMethWriteDataToFile:
+		return true;
+	case eMethFSOPresent:
+		return true;
+	case eMethReadDataFromFile:
 		return true;
 	default:
 		return false;
@@ -557,7 +600,6 @@ bool Hermes::CallAsFunc(const long lMethodNum, tVariant* pvarRetValue, tVariant*
 		m_SendData.Initialize(m_iConnect, m_iMemory);
 		m_SendData.StartHTTP(pvarRetValue, numericValue(paParams));
 	}
-
 
 	return true;
 
@@ -752,7 +794,7 @@ bool Hermes::CallAsFunc(const long lMethodNum, tVariant* pvarRetValue, tVariant*
 
 											if (TV_VT(&paParams[1]) != VTYPE_PWSTR)
 											{
-												ToV8String(L"Не верный тип параматра 2 (должнf быть строка)!", pvarRetValue, m_iMemory);
+												ToV8String(L"Не верный тип параматра 2 (должна быть строка)!", pvarRetValue, m_iMemory);
 											}
 											else
 											{
@@ -769,8 +811,6 @@ bool Hermes::CallAsFunc(const long lMethodNum, tVariant* pvarRetValue, tVariant*
 												delete[] wch_in_fn;
 												delete[] wch_out_fn;
 
-
-
 											}
 										}
 									}
@@ -783,6 +823,112 @@ bool Hermes::CallAsFunc(const long lMethodNum, tVariant* pvarRetValue, tVariant*
 		}
 	}
 	return true;
+
+	case eMethVersion:
+	{
+		ToV8String(L"1.1.4", pvarRetValue, m_iMemory);
+	}
+
+	return true;
+
+	case eMethDecodeBarcode:
+	{
+		if (!paParams)
+		{
+			DiagToV8String(pvarRetValue, m_iMemory, false, L"Отсутствуют параметры функции (Путь входного файла или двоичные данные картинки.");
+
+		}
+		else
+		{
+			if ((TV_VT(paParams) == VTYPE_PWSTR)|| TV_VT(paParams) == VTYPE_BLOB)
+			{
+				m_SendData.Initialize(m_iConnect, m_iMemory);
+				m_SendData.DecodeBarcode(paParams, pvarRetValue);
+			}
+			else
+			{
+				DiagToV8String(pvarRetValue, m_iMemory, false, L"Параметр должен быть строка - URI файла картинки штрихкода или ДД картинки.");
+
+			}
+		}
+	}
+	return true;
+
+	case eMethScanFolder:
+	{
+		mFileWorks->ScanFolder(pvarRetValue, paParams);
+	}
+		return true;
+
+	case eMethIsDirectory:
+	{
+		mFileWorks->IsDirectory(pvarRetValue, paParams);
+	}
+	return true;
+
+	case eMethCreateDirectory:
+	{
+		if (lSizeArray < 2)
+		{
+			DiagToV8String(pvarRetValue, m_iMemory, false, L"Не полный набор параметров: должно быть 2.");
+		}
+		else
+		{
+			mFileWorks->CreateDirectory(pvarRetValue, paParams);
+		}
+
+	}
+	return true;
+
+	case eMethFSOPresent:
+	{
+		if (lSizeArray < 1)
+		{
+			DiagToV8String(pvarRetValue, m_iMemory, false, L"Не полный набор параметров: должно быть 2.");
+		}
+		else
+		{
+			mFileWorks->IsFSOPresent(pvarRetValue, paParams);
+		}
+	}
+	return true;
+
+	case eMethDeleteFileOrDirectory:
+	{
+		mFileWorks->DeleteFileOrDirectory(pvarRetValue, paParams);
+	}
+	return true;
+		
+	case eMethCreateFile:
+	{
+			mFileWorks->CreateFile(pvarRetValue, paParams);
+	}
+	return true;
+
+	case eMethRenameFileOrDirectory:
+	{
+		mFileWorks->RenameFileOrDirectory(pvarRetValue,paParams);
+	}
+	return true;
+
+	case eMethWriteDataToFile:
+	{
+		if (lSizeArray < 2)
+		{
+			ToV8String(L"Недостаточно параметров (должно быть 2)!", pvarRetValue, m_iMemory);
+		}
+		else
+		{
+			mFileWorks->WriteDataToFile(pvarRetValue, paParams);
+		}
+		
+	}
+	return true;
+
+	case eMethReadDataFromFile:
+		mFileWorks->ReadDataFromFile(pvarRetValue, paParams);
+		return true;
+
 	default:
 		return false;
 	}
@@ -873,6 +1019,24 @@ void ToV8String(const wchar_t* wstr, tVariant* par, IMemoryManager* m_iMemory)
 		par->vt = VTYPE_EMPTY;
 }
 
+void ToV8StringFromChar(const char* str, tVariant* par, IMemoryManager* m_iMemory)
+{
+	if (str)
+	{
+		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+		std::wstring wstr = converter.from_bytes(std::string(str));
+
+		ULONG len = wcslen(wstr.c_str());
+		m_iMemory->AllocMemory((void**)&par->pwstrVal, (len + 1) * sizeof(WCHAR_T));
+		convToShortWchar(&par->pwstrVal, wstr.c_str());
+		par->vt = VTYPE_PWSTR;
+		par->wstrLen = len;
+	}
+	else
+		par->vt = VTYPE_EMPTY;
+}
+
+
 wstring ToWStringJni(jstring jstr)
 {
 	wstring ret;
@@ -919,6 +1083,7 @@ WCHAR_T* ToV8StringJni(jstring jstr, ULONG* lSize, IMemoryManager* m_iMemory)		/
 
 int V8ToChar(tVariant *in_value, char** ch_out)
 {
+
 	wchar_t* _wchar_t = nullptr;
 	convFromShortWchar(&_wchar_t, in_value->pwstrVal);
 	int ret = 0;
@@ -949,4 +1114,66 @@ int V8ToChar(tVariant *in_value, char** ch_out)
 	delete[] _wchar_t;
 
 	return ret;
+}
+
+//Диагностика
+//wstring DiagStructure(bool status, wstring ws_description, wstring ws_data)
+//{
+//
+//	wstring_convert<codecvt_utf8_utf16<wchar_t>> converter;
+//	string s_description = converter.to_bytes(ws_description);
+//	string s_data = converter.to_bytes(ws_data);
+//
+//	Json::Value root;
+//	root["status"] = status;
+//	root["description"] = s_description;
+//	root["data"] = s_data;
+//
+//	Json::StreamWriterBuilder builder;
+//	string s = Json::writeString(builder, root);
+//
+//	return converter.from_bytes(s);
+//
+//}
+
+bool DiagStructure(bool status, const wchar_t *wch_description, const wchar_t *wch_data, wchar_t **out_str)
+{
+	wstring ws_dwscription = wstring(wch_description);
+	wstring ws_data = wstring(wch_data);
+
+	wstring_convert<codecvt_utf8_utf16<wchar_t>> converter;
+	string s_description = converter.to_bytes(ws_dwscription);
+	string s_data = converter.to_bytes(ws_data);
+
+	Json::Value root;
+	root["Status"] = status;
+	root["Description"] = s_description.c_str();
+	root["Data"] = s_data.c_str();
+
+	Json::StreamWriterBuilder builder;
+	string s_res = Json::writeString(builder, root);
+	wstring wstr = converter.from_bytes(s_res);
+
+	if (!*out_str)
+	{
+		*out_str = new wchar_t[(wstr.length() + 1) * sizeof(wchar_t)];
+	}
+	else
+	{
+		return false;
+	}
+
+	wcscpy(*out_str, wstr.c_str());
+	return true;
+}
+
+void DiagToV8String(tVariant* pvarRetValue, IMemoryManager* m_iMemory, bool status, const wchar_t* wch_description)
+{
+	wchar_t* wch_err = nullptr;
+	if (DiagStructure(status, wch_description, L"", &wch_err))
+	{
+		ToV8String(wch_err, pvarRetValue, m_iMemory);
+		delete[] wch_err;
+	}
+	
 }

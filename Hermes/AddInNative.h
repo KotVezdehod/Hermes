@@ -8,12 +8,18 @@
 #include "../include/IMemoryManager.h"
 #include "SendData.h"
 #include "Compressor.h"
+#include "FileWorks.h"
 
 void ToV8String(const wchar_t* wstr, tVariant*, IMemoryManager* m_iMemory);
+void ToV8StringFromChar(const char* wstr, tVariant*, IMemoryManager* m_iMemory);
 std::wstring ToWStringJni(jstring jstr);
 jstring ToJniString(std::wstring* in_std_wstring);
 WCHAR_T* ToV8StringJni(jstring jstr, ULONG* lSize, IMemoryManager* m_iMemory);		//Не работает - надо разбираться почему
 int V8ToChar(tVariant* in_value, char** ch_out);
+//std::wstring DiagStructure(bool status, std::wstring ws_description, std::wstring ws_data);
+bool DiagStructure(bool status, const wchar_t* wch_description, const wchar_t* wch_data, wchar_t** out_str);
+void DiagToV8String(tVariant* pvarRetValue, IMemoryManager* m_iMemory, bool status, const wchar_t* wch_description);
+
 
 static const wchar_t* g_PropNames[] =
 {
@@ -45,9 +51,19 @@ static const wchar_t* g_MethodNames[] =
 	L"ZLIB_Decompress",
 	L"ZLIB_CompressFile",
 	L"ZLIB_DecompressFile",
-	L"PHOTO_RefactorImage"
-	/*L"PHOTO_RequestPermissions",
-	L"PHOTO_TakePhoto"*/
+	L"PHOTO_RefactorImage",
+	L"Version",
+	L"ZXING_DecodeBarcode",
+	L"FS_ScanFolder",
+	L"FS_IsDirectory",
+	L"FS_DeleteFileOrDirectory",
+	L"FS_CreateFile",
+	L"FS_CreateDirectory",
+	L"FS_RenameFileOrDirectory",
+	L"FS_WriteDataToFile",
+	L"FS_FSOPresent",
+	L"FS_ReadDataFromFile"
+
 
 };
 
@@ -67,15 +83,25 @@ static const wchar_t* g_MethodNamesRu[] =
 	L"ZLIB_Разархивировать",
 	L"ZLIB_АрхивироватьФайл",
 	L"ZLIB_РазархивироватьФайл",
-	L"PHOTO_ИзменитьКартинку"
-	/*L"PHOTO_ЗапроситьРазрешения",
-	L"PHOTO_Фотография"*/
+	L"PHOTO_ИзменитьКартинку",
+	L"Версия",
+	L"ZXING_РаспознатьШтрихкод",
+	L"ФС_ПрочитатьКаталог",
+	L"ФС_ЭтоДиректория",
+	L"ФС_УдалитьФайлИлиКаталог",
+	L"ФС_СоздатьФайл",
+	L"ФС_СоздатьКаталог",
+	L"ФС_ПереименоватьФайлИлиКаталог",
+	L"ФС_ЗаписатьДанныеВФайл",
+	L"ФС_ОбъектФССуществует",
+	L"ФС_ПрочитатьДанныеИзФайла"
 
 };
 
 class Hermes : public IComponentBase
 {
 		
+	
 public:
 	enum Props
 	{
@@ -102,8 +128,17 @@ public:
 		eMethZLIBCompressFile,
 		eMethZLIBDecompressFile,
 		eMethPHOTORefactorImage,
-		/*eMethRequestPhotoPermissions,
-		eMethTakeAPhoto,*/
+		eMethVersion,
+		eMethDecodeBarcode,
+		eMethScanFolder,
+		eMethIsDirectory,
+		eMethDeleteFileOrDirectory,
+		eMethCreateFile,
+		eMethCreateDirectory,
+		eMethRenameFileOrDirectory,
+		eMethWriteDataToFile,
+		eMethFSOPresent,
+		eMethReadDataFromFile,
 		eMethLast       // Always last
 	};
 
@@ -137,6 +172,8 @@ public:
 		tVariant* pvarRetValue, tVariant* paParams, const long lSizeArray);
 	// ILocaleBase
 	virtual void ADDIN_API SetLocale(const WCHAR_T* loc);
+	
+
 
 private:
 	long findName(const wchar_t* names[], const wchar_t* name, const uint32_t size) const;
@@ -151,6 +188,7 @@ private:
 
 	bool isScreenOn; // current blocking state
 	SendData m_SendData{};
+	FileWorks *mFileWorks;
 };
 
 #endif

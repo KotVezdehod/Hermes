@@ -30,7 +30,7 @@ uint32_t convFromShortWchar(wchar_t** Dest, const WCHAR_T* Source, uint32_t len)
         len = getLenShortWcharStr(Source) + 1;
 
     if (!*Dest)
-        *Dest = new wchar_t[len];
+        *Dest = new wchar_t[len];       //Обязательно Dest надо инициализировать нулем, иначе процедура будет туда писать....
 
     wchar_t* tmpWChar = *Dest;
     WCHAR_T* tmpShort = (WCHAR_T*)Source;

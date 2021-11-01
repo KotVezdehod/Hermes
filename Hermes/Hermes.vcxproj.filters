@@ -30,6 +30,8 @@
     <ClInclude Include="AddInNative.h" />
     <ClInclude Include="SendData.h" />
     <ClInclude Include="Compressor.h" />
+    <ClInclude Include="Json.h" />
+    <ClInclude Include="FileWorks.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="AddIn">
@@ -50,6 +52,8 @@
     <ClCompile Include="ConversionWchar.cpp" />
     <ClCompile Include="SendData.cpp" />
     <ClCompile Include="Compressor.cpp" />
+    <ClCompile Include="Json.cpp" />
+    <ClCompile Include="FileWorks.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\Package\manifest.xml">

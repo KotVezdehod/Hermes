@@ -113,17 +113,9 @@ bool Compressor::decompress_file(FILE* src, FILE* dst, tVariant* pvarRetValue)
 void Compressor::CompressBuffer(tVariant* pvarRetValue, tVariant* paParams)
 {
 	uLongf compress_buff_size = compressBound(paParams->strLen);
-	uLongf compress_buff_size_start = compress_buff_size;
 	Bytef* dst_temp_buf = nullptr;
 	uLongf compressed_size = compress_buff_size;
 
-	/*do
-	{
-		if (dst_temp_buf != nullptr)
-		{
-
-			free(dst_temp_buf);
-		}*/
 	dst_temp_buf = (Bytef*)malloc(compress_buff_size);
 	if (dst_temp_buf == nullptr)
 	{
@@ -136,9 +128,6 @@ void Compressor::CompressBuffer(tVariant* pvarRetValue, tVariant* paParams)
 
 	int res = compress(dst_temp_buf, &compressed_size, (const Bytef*)(paParams->pstrVal), paParams->strLen);
 
-	//int compress_buff_size = compress_buff_size + 50;
-	//if ((compress_buff_size - compress_buff_size_start) > 500) break;
-//} while (res == Z_BUF_ERROR);
 
 	if (res == Z_OK)
 	{

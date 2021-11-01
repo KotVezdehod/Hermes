@@ -314,59 +314,61 @@ void SendData::RefactorImage(wchar_t* fn_in, wchar_t* fn_out, int xSize, int ySi
 	return;
 }
 
-
-//void SendData::MakeAPhoto(int xSize, int ySize, int Quality, tVariant* pvarRetValue)
-//{
-//	if (obj)
-//	{
-//		JNIEnv* env = getJniEnv();
-//		jmethodID methID = env->GetMethodID(cc, "GetPhoto", "(III)Ljava/lang/String;");
-//		jstring stringObject = static_cast<jstring>(env->CallObjectMethod(obj, methID, xSize, ySize, Quality));
-//		env->DeleteLocalRef(stringObject);
-//
-//		
-//	}
-//	else
-//	{
-//
-//		ToV8String(L"JNI Error", pvarRetValue, loc_iMemoryManager);
-//	}
-//
-//	ToV8String(L"ok_en", pvarRetValue, loc_iMemoryManager);
-//
-//	return;
-//}
-//
-//void SendData::RequestPhotoPermissions(tVariant* pvarRetValue)
-//{
-//
-//	if (obj)
-//	{
-//		JNIEnv* env = getJniEnv();
-//		jmethodID methID = env->GetMethodID(cc, "RequestPhotoPermissions", "()Z");
-//		jboolean bool_res = env->CallBooleanMethod(obj, methID);
-//
-//		if (bool_res)
-//		{
-//			ToV8String(L"ok_en", pvarRetValue, loc_iMemoryManager);
-//		}
-//		else
-//		{
-//			ToV8String(L"No access", pvarRetValue, loc_iMemoryManager);
-//		}
-//
-//	}
-//	else
-//	{
-//
-//		ToV8String(L"JNI Error", pvarRetValue, loc_iMemoryManager);
-//	}
-//	return;
-//
-//
-//	return;
-//}
 #pragma endregion
+
+#pragma region Barcode
+void SendData::DecodeBarcode(tVariant* paParams, tVariant* pvarRetValue)
+{
+	if (obj)
+	{
+		JNIEnv* env = getJniEnv();
+
+		if (TV_VT(paParams) == VTYPE_PWSTR)
+		{
+			wchar_t* wch_fn_in = nullptr;
+			convFromShortWchar(&wch_fn_in, paParams->pwstrVal);
+			wstring wstr_fn_in = std::wstring(wch_fn_in);
+			delete[] wch_fn_in;
+
+			jstring js_fn_in = ToJniString(&wstr_fn_in);
+
+			jmethodID methID = env->GetMethodID(cc, "DecodeBarcode", "(Ljava/lang/String;[B)Ljava/lang/String;");
+
+			jstring stringObject = static_cast<jstring>(env->CallObjectMethod(obj, methID, js_fn_in, nullptr));
+			wstring std_wstr = ToWStringJni(stringObject);
+
+			ToV8String(std_wstr.c_str(), pvarRetValue, loc_iMemoryManager);
+
+			env->DeleteLocalRef(stringObject);
+
+			env->DeleteLocalRef(js_fn_in);
+		}
+		else   //BLOB
+		{
+			jbyteArray jb = env->NewByteArray(paParams->strLen);
+			env->SetByteArrayRegion(jb, 0, paParams->strLen, (jbyte*)(paParams->pstrVal));
+			
+			jmethodID methID = env->GetMethodID(cc, "DecodeBarcode", "(Ljava/lang/String;[B)Ljava/lang/String;");
+
+			jstring stringObject = static_cast<jstring>(env->CallObjectMethod(obj, methID, NULL, jb));
+			wstring std_wstr = ToWStringJni(stringObject);
+
+			ToV8String(std_wstr.c_str(), pvarRetValue, loc_iMemoryManager);
+
+			env->DeleteLocalRef(jb);
+			env->DeleteLocalRef(stringObject);
+		}
+
+	}
+	else
+	{
+		DiagToV8String(pvarRetValue, loc_iMemoryManager, false, L"JNI Error");
+	}
+	
+	return;
+}
+#pragma endregion
+
 
 static const wchar_t g_EventSource[] = L"Hermes";
 static const wchar_t g_EventName[] = L"BroadcastCatched";
