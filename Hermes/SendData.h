@@ -23,7 +23,7 @@ private:
 
 public:
 	
-	const wchar_t* CATCHER_CLASS_NAME = L"ru.coolclever.dreamcatcher.catcher";
+	const wchar_t* CATCHER_CLASS_NAME = L"ru.somecompany.dreamcatcher.catcher";
 
 	SendData();
 	~SendData();

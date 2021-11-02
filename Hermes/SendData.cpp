@@ -378,7 +378,7 @@ static WcharWrapper s_EventName(g_EventName);
 //https://www3.ntu.edu.sg/home/ehchua/programming/java/javanativeinterface.html
 // name of function built according to Java native call
 //
-extern "C" JNIEXPORT void JNICALL Java_ru_coolclever_dreamcatcher_catcher_OnBroadcastCatched(JNIEnv * env, jclass jClass, jlong pObject, jstring inJNIStr)
+extern "C" JNIEXPORT void JNICALL Java_ru_somecompany_dreamcatcher_catcher_OnBroadcastCatched(JNIEnv * env, jclass jClass, jlong pObject, jstring inJNIStr)
 {
 	wstring std_wstring = ToWStringJni(inJNIStr);
 	glob_last_broadcast_extra.clear();
@@ -396,7 +396,7 @@ extern "C" JNIEXPORT void JNICALL Java_ru_coolclever_dreamcatcher_catcher_OnBroa
 static const wchar_t g_EventName_http[] = L"http_request";
 static WcharWrapper s_EventName_http(g_EventName_http);
 
-extern "C" JNIEXPORT void JNICALL Java_ru_coolclever_dreamcatcher_catcher_OnHttpServerServ(JNIEnv * env, jclass jClass, jlong pObject, jstring inReq)
+extern "C" JNIEXPORT void JNICALL Java_ru_somecompany_dreamcatcher_catcher_OnHttpServerServ(JNIEnv * env, jclass jClass, jlong pObject, jstring inReq)
 {
 	wstring std_wstring = ToWStringJni(inReq);
 	WCHAR_T* WCHART = nullptr;
