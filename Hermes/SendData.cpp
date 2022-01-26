@@ -84,6 +84,27 @@ void SendData::Initialize(IAddInDefBaseEx* cnn, IMemoryManager *in_iMemoryManage
 	}
 }
 
+long SendData::numericValue(tVariant* par)
+{
+	long ret = 0;
+	switch (par->vt)
+	{
+	case VTYPE_I4:
+		ret = par->lVal;
+		break;
+	case VTYPE_UI4:
+		ret = par->ulVal;
+		break;
+	case VTYPE_R8:
+		ret = par->dblVal;
+		break;
+	case VTYPE_R4:
+		ret = par->dblVal;
+		break;
+	}
+	return ret;
+}
+
 #pragma endregion
 
 #pragma region broadcast
@@ -369,6 +390,66 @@ void SendData::DecodeBarcode(tVariant* paParams, tVariant* pvarRetValue)
 }
 #pragma endregion
 
+#pragma region Geolocation
+void SendData::StartGeolocation(tVariant* paParams, tVariant* pvarRetValue)
+{
+	if (obj)
+	{
+		
+		JNIEnv* env = getJniEnv();
+		jmethodID methID = env->GetMethodID(cc, "StartLocationListening", "(ZZ)Ljava/lang/String;");
+		jstring stringObject = static_cast<jstring>(env->CallObjectMethod(obj, methID, (&paParams[0])->bVal, (&paParams[1])->bVal));
+		wstring std_wstr = ToWStringJni(stringObject);
+		ToV8String(std_wstr.c_str(), pvarRetValue, loc_iMemoryManager);
+		env->DeleteLocalRef(stringObject);
+
+	}
+	else
+	{
+		DiagToV8String(pvarRetValue, loc_iMemoryManager, false, L"JNI Error");
+	}
+
+	return;
+}
+
+void SendData::StopGeolocation(tVariant* pvarRetValue)
+{
+	if (obj)
+	{
+		JNIEnv* env = getJniEnv();
+		jmethodID methID = env->GetMethodID(cc, "StopLocationFlow", "()V");
+		env->CallVoidMethod(obj, methID);
+		
+	}
+	else
+	{
+		DiagToV8String(pvarRetValue, loc_iMemoryManager, false, L"JNI Error");
+	}
+	return;
+}
+
+void SendData::GetLocationNow(tVariant* paParams, tVariant* pvarRetValue)
+{
+	if (obj)
+	{
+		JNIEnv* env = getJniEnv();
+		jmethodID methID = env->GetMethodID(cc, "GetLocationNow", "(ZZ)Ljava/lang/String;");
+		jstring stringObject = static_cast<jstring>(env->CallObjectMethod(obj, methID, (&paParams[0])->bVal, (&paParams[1])->bVal));
+		wstring std_wstr = ToWStringJni(stringObject);
+		ToV8String(std_wstr.c_str(), pvarRetValue, loc_iMemoryManager);
+		env->DeleteLocalRef(stringObject);
+
+	}
+	else
+	{
+		DiagToV8String(pvarRetValue, loc_iMemoryManager, false, L"JNI Error");
+	}
+
+	return;
+}
+
+#pragma endregion
+
 
 static const wchar_t g_EventSource[] = L"Hermes";
 static const wchar_t g_EventName[] = L"BroadcastCatched";
@@ -404,6 +485,22 @@ extern "C" JNIEXPORT void JNICALL Java_ru_somecompany_dreamcatcher_catcher_OnHtt
 
 	IAddInDefBaseEx* pAddIn = (IAddInDefBaseEx*)pObject;
 	pAddIn->ExternalEvent(s_EventSource, s_EventName_http, WCHART);
+
+	delete[] WCHART;
+
+}
+
+static const wchar_t g_EventName_GEO[] = L"GEO_location";
+static WcharWrapper s_EventName_GEO(g_EventName_GEO);
+
+extern "C" JNIEXPORT void JNICALL Java_ru_somecompany_dreamcatcher_catcher_OnLocationReturned(JNIEnv * env, jclass jClass, jlong pObject, jstring inReq)
+{
+	wstring std_wstring = ToWStringJni(inReq);
+	WCHAR_T* WCHART = nullptr;
+	convToShortWchar(&WCHART, std_wstring.c_str());
+
+	IAddInDefBaseEx* pAddIn = (IAddInDefBaseEx*)pObject;
+	pAddIn->ExternalEvent(s_EventSource, s_EventName_GEO, WCHART);
 
 	delete[] WCHART;
 

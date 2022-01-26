@@ -62,7 +62,10 @@ static const wchar_t* g_MethodNames[] =
 	L"FS_RenameFileOrDirectory",
 	L"FS_WriteDataToFile",
 	L"FS_FSOPresent",
-	L"FS_ReadDataFromFile"
+	L"FS_ReadDataFromFile",
+	L"GEO_StartListening",
+	L"GEO_StopListening"
+	L"GEO_GetNow"
 
 
 };
@@ -94,14 +97,17 @@ static const wchar_t* g_MethodNamesRu[] =
 	L"ФС_ПереименоватьФайлИлиКаталог",
 	L"ФС_ЗаписатьДанныеВФайл",
 	L"ФС_ОбъектФССуществует",
-	L"ФС_ПрочитатьДанныеИзФайла"
+	L"ФС_ПрочитатьДанныеИзФайла",
+	L"ГЕО_НачатьПолучениеКоординат",
+	L"ГЕО_ОстановитьПолучениеКоординат",
+	L"ГЕО_ПолучитьСейчас"
 
 };
 
 class Hermes : public IComponentBase
 {
-		
 	
+
 public:
 	enum Props
 	{
@@ -139,6 +145,9 @@ public:
 		eMethWriteDataToFile,
 		eMethFSOPresent,
 		eMethReadDataFromFile,
+		eMethGEOStartListening,
+		eMethGEOStopListening,
+		eMethGEOGetNow,
 		eMethLast       // Always last
 	};
 

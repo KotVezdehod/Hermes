@@ -375,6 +375,10 @@ long Hermes::GetNParams(const long lMethodNum)
 		return 1;
 	case eMethReadDataFromFile:
 		return 1;
+	case eMethGEOStartListening:
+		return 2;
+	case eMethGEOGetNow:
+		return 2;
 	default:
 		return 0;
 	}
@@ -443,6 +447,12 @@ bool Hermes::HasRetVal(const long lMethodNum)
 	case eMethFSOPresent:
 		return true;
 	case eMethReadDataFromFile:
+		return true;
+	case eMethGEOStartListening:
+		return true;
+	case eMethGEOStopListening:
+		return true;
+	case eMethGEOGetNow:
 		return true;
 	default:
 		return false;
@@ -927,6 +937,40 @@ bool Hermes::CallAsFunc(const long lMethodNum, tVariant* pvarRetValue, tVariant*
 
 	case eMethReadDataFromFile:
 		mFileWorks->ReadDataFromFile(pvarRetValue, paParams);
+		return true;
+
+	case eMethGEOStartListening:
+		if (TV_VT(&paParams[0]) == VTYPE_BOOL && TV_VT(&paParams[1]) == VTYPE_BOOL)
+		{
+			m_SendData.Initialize(m_iConnect, m_iMemory);
+			m_SendData.StartGeolocation(paParams, pvarRetValue);
+		}
+		else
+		{
+			DiagToV8String(pvarRetValue, m_iMemory, false, L"Не верный тип аргументов (должны быть булевы)");
+		}
+
+		return true;
+
+	case eMethGEOStopListening:
+
+		m_SendData.Initialize(m_iConnect, m_iMemory);
+		m_SendData.StopGeolocation(pvarRetValue);
+
+		return true;
+
+	case eMethGEOGetNow:
+
+		if (TV_VT(&paParams[0]) == VTYPE_BOOL && TV_VT(&paParams[1]) == VTYPE_BOOL)
+		{
+			m_SendData.Initialize(m_iConnect, m_iMemory);
+			m_SendData.GetLocationNow(paParams,pvarRetValue);
+		}
+		else
+		{
+			DiagToV8String(pvarRetValue, m_iMemory, false, L"Не верный тип аргументов (должны быть булевы)");
+		}
+
 		return true;
 
 	default:

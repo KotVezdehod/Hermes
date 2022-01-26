@@ -29,6 +29,7 @@ public:
 	~SendData();
 
 	void Initialize(IAddInDefBaseEx* cnn, IMemoryManager* in_iMemoryManager);
+	long numericValue(tVariant* par);
 
 	void Start(std::wstring* std_wstr_filter, IAddInDefBaseEx* cnn) const; // Start monitoring lock state
 	void Stop() const; // End of monitoring
@@ -46,4 +47,7 @@ public:
 	void RequestPhotoPermissions(tVariant* pvarRetValue);*/
 	void RefactorImage(wchar_t *fn_in, wchar_t* fn_out, int xSize, int ySize, int Quality, tVariant* pvarRetValue);
 	void DecodeBarcode(tVariant* paParams, tVariant* pvarRetValue);
+	void StartGeolocation(tVariant* paParams, tVariant* pvarRetValue);
+	void StopGeolocation(tVariant* pvarRetValue);
+	void GetLocationNow(tVariant* paParams, tVariant* pvarRetValue);
 };
