@@ -215,6 +215,8 @@
     <ClInclude Include="Json.h" />
     <ClInclude Include="SendData.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="sqlite3.h" />
+    <ClInclude Include="Sqlite3_1c.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\jni\jnienv.cpp" />
@@ -224,6 +226,8 @@
     <ClCompile Include="FileWorks.cpp" />
     <ClCompile Include="Json.cpp" />
     <ClCompile Include="SendData.cpp" />
+    <ClCompile Include="sqlite3.c" />
+    <ClCompile Include="Sqlite3_1c.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\Package\manifest.xml" />

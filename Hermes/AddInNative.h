@@ -9,6 +9,7 @@
 #include "SendData.h"
 #include "Compressor.h"
 #include "FileWorks.h"
+#include "Sqlite3_1c.h"
 
 void ToV8String(const wchar_t* wstr, tVariant*, IMemoryManager* m_iMemory);
 void ToV8StringFromChar(const char* wstr, tVariant*, IMemoryManager* m_iMemory);
@@ -18,6 +19,8 @@ WCHAR_T* ToV8StringJni(jstring jstr, ULONG* lSize, IMemoryManager* m_iMemory);		
 int V8ToChar(tVariant* in_value, char** ch_out);
 //std::wstring DiagStructure(bool status, std::wstring ws_description, std::wstring ws_data);
 bool DiagStructure(bool status, const wchar_t* wch_description, const wchar_t* wch_data, wchar_t** out_str);
+void DiagStructure(bool status, const wchar_t* wch_description, const wchar_t* wch_data, tVariant* pvarRetValue, IMemoryManager* m_iMemory);
+void DiagStructure(bool status, string* s_description, Json::Value* j_data, tVariant* pvarRetValue, IMemoryManager* m_iMemory);
 void DiagToV8String(tVariant* pvarRetValue, IMemoryManager* m_iMemory, bool status, const wchar_t* wch_description);
 
 
@@ -65,7 +68,15 @@ static const wchar_t* g_MethodNames[] =
 	L"FS_ReadDataFromFile",
 	L"GEO_StartListening",
 	L"GEO_StopListening"
-	L"GEO_GetNow"
+	L"GEO_GetNow",
+	L"SQLt_OpenConnection",
+	L"SQLt_CloseConnection",
+	L"SQLt_GetOpenedConnectionsList",
+	L"SQLt_GetDbDetails",
+	L"SQLt_ExecuteStatement",
+	L"SQLt_ExecuteStatement_v2",
+	L"SQLt_InsertBlobData",
+	L"SQLt_SelectBlobData"
 
 
 };
@@ -100,7 +111,15 @@ static const wchar_t* g_MethodNamesRu[] =
 	L"ФС_ПрочитатьДанныеИзФайла",
 	L"ГЕО_НачатьПолучениеКоординат",
 	L"ГЕО_ОстановитьПолучениеКоординат",
-	L"ГЕО_ПолучитьСейчас"
+	L"ГЕО_ПолучитьСейчас",
+	L"СКЛт_ОткрытьСоединение",
+	L"СКЛт_ЗакрытьСоединение",
+	L"СКЛт_ПолучитьСписокОткрытыхСоединений",
+	L"СКЛт_ПолучитьДеталиПоБД",
+	L"СКЛт_ВыполнитьСкрипт",
+	L"СКЛт_ВыполнитьСкрипт_v2",
+	L"СКЛт_ЗаписатьДвоичныеДанные",
+	L"СКЛт_ПрочитатьДвоичныеДанные"
 
 };
 
@@ -148,6 +167,14 @@ public:
 		eMethGEOStartListening,
 		eMethGEOStopListening,
 		eMethGEOGetNow,
+		eMethSqlLiteOpenConnection,
+		eMethSqlLiteCloseConnection,
+		eMethSqlLiteGetOpenedConnectionsList,
+		eMethSqlLiteGetDbDetails,
+		eMethSqlLiteExecuteStatement,
+		eMethSqlLiteExecuteStatement_v2,
+		eMethSqlLiteInsertBlobData,
+		eMethSqlLiteSelectBlobData,
 		eMethLast       // Always last
 	};
 
@@ -198,6 +225,7 @@ private:
 	bool isScreenOn; // current blocking state
 	SendData m_SendData{};
 	FileWorks *mFileWorks;
+	Sqlite3_1c mSQLt{};
 };
 
 #endif

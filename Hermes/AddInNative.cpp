@@ -379,6 +379,20 @@ long Hermes::GetNParams(const long lMethodNum)
 		return 2;
 	case eMethGEOGetNow:
 		return 2;
+	case eMethSqlLiteOpenConnection:
+		return 1;
+	case eMethSqlLiteCloseConnection:
+		return 1;
+	case eMethSqlLiteGetDbDetails:
+		return 1;
+	case eMethSqlLiteExecuteStatement:
+		return 2;
+	case eMethSqlLiteExecuteStatement_v2:
+		return 2;
+	case eMethSqlLiteInsertBlobData:
+		return 3;
+	case eMethSqlLiteSelectBlobData:
+		return 2;
 	default:
 		return 0;
 	}
@@ -400,59 +414,40 @@ bool Hermes::HasRetVal(const long lMethodNum)
 	switch (lMethodNum)
 	{
 	case eMethTest:
-		return true;
-
 	case eMethStartBroadcastsInterception:
-		return true;
 	case eMethStopBroadcastsInterception:
-		return true;
 	case eMethDeviceID:
-		return true;
 	case eMethAndroidID:
-		return true;
 	case eMethOSAbis:
-		return true;
 	case eMethStartHTTP:
-		return true;
 	case eMethStopHTTP:
-		return true;
 	case eMethZLIBCompress:
-		return true;
 	case eMethZLIBDecompress:
-		return true;
 	case eMethZLIBCompressFile:
-		return true;
 	case eMethZLIBDecompressFile:
-		return true;
 	case eMethPHOTORefactorImage:
-		return true;
 	case eMethVersion:
-		return true;
 	case eMethDecodeBarcode:
-		return true;
 	case eMethScanFolder:
-		return true;
 	case eMethIsDirectory:
-		return true;
 	case eMethDeleteFileOrDirectory:
-		return true;
 	case eMethCreateFile:
-		return true;
 	case eMethCreateDirectory:
-		return true;
 	case eMethRenameFileOrDirectory:
-		return true;
 	case eMethWriteDataToFile:
-		return true;
 	case eMethFSOPresent:
-		return true;
 	case eMethReadDataFromFile:
-		return true;
 	case eMethGEOStartListening:
-		return true;
 	case eMethGEOStopListening:
-		return true;
 	case eMethGEOGetNow:
+	case eMethSqlLiteOpenConnection:
+	case eMethSqlLiteCloseConnection:
+	case eMethSqlLiteGetOpenedConnectionsList:
+	case eMethSqlLiteGetDbDetails:
+	case eMethSqlLiteExecuteStatement:
+	case eMethSqlLiteExecuteStatement_v2:
+	case eMethSqlLiteInsertBlobData:
+	case eMethSqlLiteSelectBlobData:
 		return true;
 	default:
 		return false;
@@ -973,6 +968,252 @@ bool Hermes::CallAsFunc(const long lMethodNum, tVariant* pvarRetValue, tVariant*
 
 		return true;
 
+	case eMethSqlLiteOpenConnection:
+	{
+
+		if (paParams->vt != VTYPE_PWSTR)
+		{
+			DiagStructure(false, L"Параметр должен быть строкой!", L"", pvarRetValue, m_iMemory);
+			return true;
+		}
+
+		wchar_t* dbName = nullptr;
+		convFromShortWchar(&dbName, paParams->pwstrVal);
+		wstring wsDbName = wstring(dbName);
+
+		Json::Value root = mSQLt.Open(&wsDbName);
+		string desc = root["Description"].asString();
+		DiagStructure(root["Status"].asBool(), &desc, &root["Data"], pvarRetValue, m_iMemory);
+
+		delete dbName;
+
+	}
+	return true;
+
+	case eMethSqlLiteCloseConnection:
+	{
+		if (!isNumericParameter(paParams))
+		{
+			DiagStructure(false, L"Параметр должен быть числом!", L"", pvarRetValue, m_iMemory);
+			return true;
+		}
+
+		Json::Value root = mSQLt.Close(numericValue(paParams));
+
+		string desc = root["Description"].asString();
+		DiagStructure(root["Status"].asBool(), &desc, &root["Data"], pvarRetValue, m_iMemory);
+
+	}
+	return true;
+
+	case eMethSqlLiteGetOpenedConnectionsList:
+	{
+		Json::Value root = mSQLt.GetConnections();
+
+		string desc = root["Description"].asString();
+		DiagStructure(root["Status"].asBool(), &desc, &root["Data"], pvarRetValue, m_iMemory);
+	}
+	return true;
+
+	case eMethSqlLiteGetDbDetails:
+	{
+		if (!isNumericParameter(paParams))
+		{
+			DiagStructure(false, L"Параметр должен быть числом!", L"", pvarRetValue, m_iMemory);
+			return true;
+		}
+
+		Json::Value root = mSQLt.GetDbDetails(numericValue(paParams));
+
+		string desc = root["Description"].asString();
+		DiagStructure(root["Status"].asBool(), &desc, &root["Data"], pvarRetValue, m_iMemory);
+	}
+	return true;
+
+	case eMethSqlLiteExecuteStatement:
+	{
+		if (lSizeArray < 2)
+		{
+			DiagStructure(false, L"Параметра должно быть 2.", L"", pvarRetValue, m_iMemory);
+			return true;
+		}
+
+		if (!isNumericParameter(&paParams[0]))
+		{
+			DiagStructure(false, L"Первый параметр (connection ID) должен быть числом.", L"", pvarRetValue, m_iMemory);
+			return true;
+		}
+		if ((&paParams[1])->vt != VTYPE_PWSTR)
+		{
+			DiagStructure(false, L"Второй параметр (скрипт запроса к БД) должен быть строкой.", L"", pvarRetValue, m_iMemory);
+			return true;
+		}
+
+		wchar_t* statement = nullptr;
+		convFromShortWchar(&statement, (&paParams[1])->pwstrVal);
+
+		wstring ws_statement = wstring(statement);
+		Json::Value root = mSQLt.Exec(numericValue(&paParams[0]), &ws_statement);
+
+		delete statement;
+
+		string desc = root["Description"].asCString();
+		DiagStructure(root["Status"].asBool(), &desc, &root["Data"], pvarRetValue, m_iMemory);
+
+	}
+	return true;
+
+	case eMethSqlLiteExecuteStatement_v2:
+	{
+		if (lSizeArray < 2)
+		{
+			DiagStructure(false, L"Параметра должно быть 2.", L"", pvarRetValue, m_iMemory);
+			return true;
+		}
+
+		if ((&paParams[0])->vt != VTYPE_PWSTR)
+		{
+			DiagStructure(false, L"Первый параметр (путь к файлу БД) должен быть строкой.", L"", pvarRetValue, m_iMemory);
+			return true;
+		}
+		if ((&paParams[1])->vt != VTYPE_PWSTR)
+		{
+			DiagStructure(false, L"Второй параметр (скрипт запроса к БД) должен быть строкой.", L"", pvarRetValue, m_iMemory);
+			return true;
+		}
+
+		wchar_t* dbname = nullptr;
+		wchar_t* statement = nullptr;
+
+		convFromShortWchar(&dbname, (&paParams[0])->pwstrVal);
+		convFromShortWchar(&statement, (&paParams[1])->pwstrVal);
+
+		wstring ws_database = wstring(dbname);
+		wstring ws_statement = wstring(statement);
+		Json::Value root = mSQLt.Exec_v2(&ws_database, &ws_statement);
+
+		delete dbname;
+		delete statement;
+
+		string desc = root["Description"].asCString();
+		DiagStructure(root["Status"].asBool(), &desc, &root["Data"], pvarRetValue, m_iMemory);
+
+	}
+	return true;
+
+	case eMethSqlLiteInsertBlobData:
+	{
+		if (lSizeArray < 3)
+		{
+			DiagStructure(false, L"Параметра должно быть 3 (ИД соединения, скрипт запроса, двоичные данные).", L"", pvarRetValue, m_iMemory);
+			return true;
+		}
+
+		if (!isNumericParameter(&paParams[0]))
+		{
+			DiagStructure(false, L"Первый параметр (connection ID) должен быть числом.", L"", pvarRetValue, m_iMemory);
+			return true;
+		}
+
+		if ((&paParams[1])->vt != VTYPE_PWSTR)
+		{
+			DiagStructure(false, L"Второй параметр (скрипт запроса к БД) должен быть строкой.", L"", pvarRetValue, m_iMemory);
+			return true;
+		}
+		if ((&paParams[2])->vt != VTYPE_BLOB)
+		{
+			DiagStructure(false, L"Третий параметр должен быть двоичными данными.", L"", pvarRetValue, m_iMemory);
+			return true;
+		}
+
+
+		wchar_t* statement = nullptr;
+		convFromShortWchar(&statement, (&paParams[1])->pwstrVal);
+		wstring ws_statement = wstring(statement);
+
+		char* blob_data_from_platform = new char[(&paParams[2])->strLen];
+		memset(blob_data_from_platform, 0, (&paParams[2])->strLen);
+		memcpy(blob_data_from_platform, (&paParams[2])->pstrVal, (&paParams[2])->strLen);
+
+		Json::Value root = mSQLt.InsertBlobData(numericValue(&paParams[0]), &ws_statement, blob_data_from_platform, (&paParams[2])->strLen);
+		delete[] blob_data_from_platform;
+
+		string desc = root["Description"].asCString();
+		DiagStructure(root["Status"].asBool(), &desc, &root["Data"], pvarRetValue, m_iMemory);
+
+	}
+	return true;
+
+	case eMethSqlLiteSelectBlobData:
+	{
+		if (lSizeArray < 2)
+		{
+			DiagStructure(false, L"Параметра должно быть 3 (ИД соединения, скрипт запроса, двоичные данные).", L"", pvarRetValue, m_iMemory);
+			return true;
+		}
+
+		if (!isNumericParameter(&paParams[0]))
+		{
+			DiagStructure(false, L"Первый параметр (connection ID) должен быть числом.", L"", pvarRetValue, m_iMemory);
+			return true;
+		}
+
+		if ((&paParams[1])->vt != VTYPE_PWSTR)
+		{
+			DiagStructure(false, L"Второй параметр (скрипт запроса к БД) должен быть строкой.", L"", pvarRetValue, m_iMemory);
+			return true;
+		}
+
+		wchar_t* statement = nullptr;
+		convFromShortWchar(&statement, (&paParams[1])->pwstrVal);
+		wstring ws_statement = wstring(statement);
+
+		Json::Value root = mSQLt.SelectBlobData(numericValue(&paParams[0]), &ws_statement);
+		uint64_t pointer = root["Data"]["Pointer"].asUInt64();
+
+		if (root["Status"] == false)
+		{
+			string desc = root["Description"].asCString();
+			DiagStructure(root["Status"].asBool(), &desc, &root["Data"], pvarRetValue, m_iMemory);
+		}
+		else
+		{
+
+			if (pointer)
+			{
+				if (m_iMemory->AllocMemory((void**)&pvarRetValue->pstrVal, root["Data"]["Size"].asInt()))
+				{
+					pvarRetValue->strLen = root["Data"]["Size"].asInt();
+					TV_VT(pvarRetValue) = VTYPE_BLOB;
+					memcpy(pvarRetValue->pstrVal, reinterpret_cast<char*>(pointer), pvarRetValue->strLen);
+				}
+				else
+				{
+					stringstream ss;
+					ss << "Не удалось выделить память под возващаемые данные (" << to_string(root["Data"]["Size"].asInt()) << ")";
+
+					string s_loc = ss.str();
+
+					DiagStructure(false, &s_loc, nullptr, pvarRetValue, m_iMemory);
+				}
+			}
+			else
+			{
+				stringstream ss;
+				ss << "Не удалось выделить память под возващаемые данные (" << to_string(root["Data"]["Size"].asInt()) << ")";
+
+				string s_loc = ss.str();
+
+				DiagStructure(false, &s_loc, nullptr, pvarRetValue, m_iMemory);
+			}
+		}
+
+		if (pointer)
+			delete[] reinterpret_cast<char*>(pointer);
+
+	}
+	return true;
+
 	default:
 		return false;
 	}
@@ -1209,6 +1450,48 @@ bool DiagStructure(bool status, const wchar_t *wch_description, const wchar_t *w
 
 	wcscpy(*out_str, wstr.c_str());
 	return true;
+}
+
+void DiagStructure(bool status, const wchar_t* wch_description, const wchar_t* wch_data, tVariant* pvarRetValue, IMemoryManager* m_iMemory)
+{
+	wstring ws_dwscription = wstring(wch_description);
+	wstring ws_data = wstring(wch_data);
+
+	wstring_convert<codecvt_utf8_utf16<wchar_t>> converter;
+	string s_description = converter.to_bytes(ws_dwscription);
+	string s_data = converter.to_bytes(ws_data);
+
+	Json::Value root;
+	root["Status"] = status;
+	root["Description"] = s_description.c_str();
+	root["Data"] = s_data.c_str();
+
+	Json::StreamWriterBuilder builder;
+	string s_res = Json::writeString(builder, root);
+	wstring wstr = converter.from_bytes(s_res);
+
+	ToV8String(wstr.c_str(), pvarRetValue, m_iMemory);
+
+	return;
+}
+
+void DiagStructure(bool status, string* s_description, Json::Value* j_data, tVariant* pvarRetValue, IMemoryManager* m_iMemory)
+{
+
+	Json::Value root;
+	root["Status"] = status;
+	root["Description"] = *s_description;
+	root["Data"] = *j_data;
+
+	wstring_convert<codecvt_utf8_utf16<wchar_t>> converter;
+
+	Json::StreamWriterBuilder builder;
+	string s_res = Json::writeString(builder, root);
+	wstring wstr = converter.from_bytes(s_res);
+
+	ToV8String(wstr.c_str(), pvarRetValue, m_iMemory);
+
+	return;
 }
 
 void DiagToV8String(tVariant* pvarRetValue, IMemoryManager* m_iMemory, bool status, const wchar_t* wch_description)

@@ -32,6 +32,8 @@
     <ClInclude Include="Compressor.h" />
     <ClInclude Include="Json.h" />
     <ClInclude Include="FileWorks.h" />
+    <ClInclude Include="sqlite3.h" />
+    <ClInclude Include="Sqlite3_1c.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="AddIn">
@@ -54,6 +56,8 @@
     <ClCompile Include="Compressor.cpp" />
     <ClCompile Include="Json.cpp" />
     <ClCompile Include="FileWorks.cpp" />
+    <ClCompile Include="Sqlite3_1c.cpp" />
+    <ClCompile Include="sqlite3.c" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\Package\manifest.xml">
