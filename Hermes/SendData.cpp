@@ -14,10 +14,7 @@ wstring glob_last_broadcast_extra = L"";
 
 #pragma region common
 
-SendData::SendData() : cc(nullptr), obj(nullptr), loc_iMemoryManager(nullptr)
-{
-
-}
+SendData::SendData() : cc(nullptr), obj(nullptr), loc_iMemoryManager(nullptr){}
 
 SendData::~SendData()
 {
@@ -290,10 +287,10 @@ void SendData::ReplyHTTP(tVariant* paParams)
 {
 	if (obj)
 	{
-		wstring std_wstr(paParams->pwstrVal, paParams->pwstrVal + paParams->strLen);
-		jstring j_string = ToJniString(&std_wstr);
-
 		JNIEnv* env = getJniEnv();
+		size_t len = getLenShortWcharStr(paParams->pwstrVal);
+		jstring j_string = env->NewString(paParams->pwstrVal, len);
+
 		jmethodID methID = env->GetMethodID(cc, "handleAnswerFrom1c", "(Ljava/lang/String;)V");
 		env->CallVoidMethod(obj, methID, j_string);
 		env->DeleteLocalRef(j_string);
