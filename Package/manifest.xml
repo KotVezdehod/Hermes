@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<bundle xmlns="http://v8.1c.ru/8.2/addin/bundle" name="Hermes">
-	<component os="Android" path="Hermes_x86.so" codeType="c++" type="native" arch="i386"/>
-	<component os="Android" path="Hermes_x64.so" codeType="c++" type="native" arch="x86_64"/>
-	
-	<component os="Android" path="Hermes_ARM.so" codeType="c++" type="native" arch="ARM"/>
-	<component os="Android" path="Hermes_ARM64.so" codeType="c++" type="native" arch="ARM64"/>
-</bundle>
