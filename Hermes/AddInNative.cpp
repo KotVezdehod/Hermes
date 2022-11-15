@@ -1,18 +1,18 @@
-﻿
-#include "pch.h"
-#include "AddInNative.h"
-#include "ConversionWchar.h"
-#include "wchar.h"
+﻿#include <codecvt>
+#include <dirent.h>
 #include <chrono>
 #include <thread>
 #include <string>
 #include <iostream>
+
+#include "pch.h"
+#include "AddInNative.h"
+#include "ConversionWchar.h"
+#include "wchar.h"
 #include "../jni/jnienv.h"
 #include "../include/IAndroidComponentHelper.h"
 #include "Json.h"
-#include <codecvt>
-#include <dirent.h>
-
+#include "samba.h"
 
 using std::string;
 using std::wstring;
@@ -393,6 +393,10 @@ long Hermes::GetNParams(const long lMethodNum)
 		return 3;
 	case eMethSqlLiteSelectBlobData:
 		return 2;
+	case eMethSmbListCatalog:
+		return 2;
+	case eMethSmbGetFile:
+		return 5;
 	default:
 		return 0;
 	}
@@ -448,6 +452,8 @@ bool Hermes::HasRetVal(const long lMethodNum)
 	case eMethSqlLiteExecuteStatement_v2:
 	case eMethSqlLiteInsertBlobData:
 	case eMethSqlLiteSelectBlobData:
+	case eMethSmbListCatalog:
+	case eMethSmbGetFile:
 		return true;
 	default:
 		return false;
@@ -1214,6 +1220,21 @@ bool Hermes::CallAsFunc(const long lMethodNum, tVariant* pvarRetValue, tVariant*
 	}
 	return true;
 
+	case eMethSmbListCatalog:
+	{
+		Samba smb(m_iMemory);
+		smb.ListCatalog(paParams, pvarRetValue);
+
+	}
+	return true;
+
+	case eMethSmbGetFile:
+	{
+		Samba smb(m_iMemory);
+		smb.GetFileData(paParams, pvarRetValue);
+	}
+	return true;
+
 	default:
 		return false;
 	}
@@ -1421,6 +1442,32 @@ int V8ToChar(tVariant *in_value, char** ch_out)
 //
 //}
 
+bool DiagStructure(bool status, const char* ch_description, const char* ch_data, char** out_str)
+{
+	
+	Json::Value root;
+	root["Status"] = status;
+	root["Description"] = ch_description;
+	root["Data"] = ch_data;
+
+	Json::StreamWriterBuilder builder;
+	string s_res = Json::writeString(builder, root);
+
+	if (!*out_str)
+	{
+		*out_str = new char[(s_res.length() + 1)];
+	}
+	else
+	{
+		return false;
+	}
+
+	strcpy(*out_str, s_res.c_str());
+	return true;
+
+}
+
+
 bool DiagStructure(bool status, const wchar_t *wch_description, const wchar_t *wch_data, wchar_t **out_str)
 {
 	wstring ws_dwscription = wstring(wch_description);
@@ -1503,4 +1550,15 @@ void DiagToV8String(tVariant* pvarRetValue, IMemoryManager* m_iMemory, bool stat
 		delete[] wch_err;
 	}
 	
+}
+
+void DiagToV8String(tVariant* pvarRetValue, IMemoryManager* m_iMemory, bool status, const char* ch_description)
+{
+	char* ch_err = nullptr;
+	if (DiagStructure(status, ch_description, "", &ch_err))
+	{
+		ToV8StringFromChar(ch_err, pvarRetValue, m_iMemory);
+		delete[] ch_err;
+	}
+
 }

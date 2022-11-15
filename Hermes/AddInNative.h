@@ -18,10 +18,13 @@ jstring ToJniString(std::wstring* in_std_wstring);
 WCHAR_T* ToV8StringJni(jstring jstr, ULONG* lSize, IMemoryManager* m_iMemory);		//Не работает - надо разбираться почему
 int V8ToChar(tVariant* in_value, char** ch_out);
 //std::wstring DiagStructure(bool status, std::wstring ws_description, std::wstring ws_data);
+
+bool DiagStructure(bool status, const char* ch_description, const char* ch_data, char** out_str);
 bool DiagStructure(bool status, const wchar_t* wch_description, const wchar_t* wch_data, wchar_t** out_str);
 void DiagStructure(bool status, const wchar_t* wch_description, const wchar_t* wch_data, tVariant* pvarRetValue, IMemoryManager* m_iMemory);
 void DiagStructure(bool status, string* s_description, Json::Value* j_data, tVariant* pvarRetValue, IMemoryManager* m_iMemory);
 void DiagToV8String(tVariant* pvarRetValue, IMemoryManager* m_iMemory, bool status, const wchar_t* wch_description);
+void DiagToV8String(tVariant* pvarRetValue, IMemoryManager* m_iMemory, bool status, const char* wch_description);
 
 
 static const wchar_t* g_PropNames[] =
@@ -76,8 +79,9 @@ static const wchar_t* g_MethodNames[] =
 	L"SQLt_ExecuteStatement",
 	L"SQLt_ExecuteStatement_v2",
 	L"SQLt_InsertBlobData",
-	L"SQLt_SelectBlobData"
-
+	L"SQLt_SelectBlobData",
+	L"SMB_ListCatalog",
+	L"SMB_GetFile"
 
 };
 
@@ -119,7 +123,9 @@ static const wchar_t* g_MethodNamesRu[] =
 	L"СКЛт_ВыполнитьСкрипт",
 	L"СКЛт_ВыполнитьСкрипт_v2",
 	L"СКЛт_ЗаписатьДвоичныеДанные",
-	L"СКЛт_ПрочитатьДвоичныеДанные"
+	L"СКЛт_ПрочитатьДвоичныеДанные",
+	L"SMB_ПрочитатьКаталог",
+	L"SMB_ПолучитьФайл"
 
 };
 
@@ -175,6 +181,8 @@ public:
 		eMethSqlLiteExecuteStatement_v2,
 		eMethSqlLiteInsertBlobData,
 		eMethSqlLiteSelectBlobData,
+		eMethSmbListCatalog,
+		eMethSmbGetFile,
 		eMethLast       // Always last
 	};
 

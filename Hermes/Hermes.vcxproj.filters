@@ -79,7 +79,7 @@
     <ClInclude Include="..\smb2\include\smb2\smb2.h">
       <Filter>smb2\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="smb2.h" />
+    <ClInclude Include="samba.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="AddIn">
@@ -260,7 +260,7 @@
     <ClCompile Include="..\smb2\smb2-cmd-tree-connect.c">
       <Filter>smb2\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="smb2.cpp" />
+    <ClCompile Include="samba.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\Package\manifest.xml">

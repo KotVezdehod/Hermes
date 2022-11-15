@@ -230,7 +230,7 @@
     <ClInclude Include="Json.h" />
     <ClInclude Include="SendData.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="smb2.h" />
+    <ClInclude Include="samba.h" />
     <ClInclude Include="sqlite3.h" />
     <ClInclude Include="Sqlite3_1c.h" />
   </ItemGroup>
@@ -291,7 +291,7 @@
     <ClCompile Include="FileWorks.cpp" />
     <ClCompile Include="Json.cpp" />
     <ClCompile Include="SendData.cpp" />
-    <ClCompile Include="smb2.cpp" />
+    <ClCompile Include="samba.cpp" />
     <ClCompile Include="sqlite3.c" />
     <ClCompile Include="Sqlite3_1c.cpp" />
   </ItemGroup>
