@@ -320,7 +320,7 @@ void Samba::GetFileData(tVariant* paParams, tVariant* pvarRetValue)
 				{
 					unsigned char* buf = new unsigned char[bufSz];
 					bool success = true;
-					while ((count = smb2_pread(smb2, fh, buf, MAXBUF, startPos)) != 0) 
+					while ((count = smb2_pread(smb2, fh, buf, bufSz, startPos)) != 0)
 					{
 						if (count == -EAGAIN) 
 						{
