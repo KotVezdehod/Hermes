@@ -14,6 +14,7 @@ public:
 	
 	void ListCatalog(tVariant* par, tVariant* pvarRetValue);
 	void GetFileData(tVariant* par, tVariant* pvarRetValue);
+	void PutFileData(tVariant* par, tVariant* pvarRetValue);
 
 private:
 	IMemoryManager* iMemoryManager;

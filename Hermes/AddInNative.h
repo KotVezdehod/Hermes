@@ -81,7 +81,8 @@ static const wchar_t* g_MethodNames[] =
 	L"SQLt_InsertBlobData",
 	L"SQLt_SelectBlobData",
 	L"SMB_ListCatalog",
-	L"SMB_GetFile"
+	L"SMB_GetFile",
+	L"SMB_PutFile"
 
 };
 
@@ -125,7 +126,8 @@ static const wchar_t* g_MethodNamesRu[] =
 	L"СКЛт_ЗаписатьДвоичныеДанные",
 	L"СКЛт_ПрочитатьДвоичныеДанные",
 	L"SMB_ПрочитатьКаталог",
-	L"SMB_ПолучитьФайл"
+	L"SMB_ПолучитьФайл",
+	L"SMB_ЗаписатьФайл"
 
 };
 
@@ -183,6 +185,7 @@ public:
 		eMethSqlLiteSelectBlobData,
 		eMethSmbListCatalog,
 		eMethSmbGetFile,
+		eMethSmbPutFile,
 		eMethLast       // Always last
 	};
 

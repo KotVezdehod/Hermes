@@ -411,6 +411,168 @@ void Samba::GetFileData(tVariant* paParams, tVariant* pvarRetValue)
 	return;
 }
 
+void Samba::PutFileData(tVariant* paParams, tVariant* pvarRetValue)
+{
+	size_t MAXBUF = 16 * 1024 * 1024;
+	if (TV_VT(&paParams[0]) != VTYPE_PWSTR)
+	{
+		DiagToV8String(pvarRetValue, iMemoryManager, false, L"Первый параметр - URL: строка. От 1 до 1024 символов.");
+		return;
+	}
+	else if ((&paParams[0])->wstrLen > 1024 || (&paParams[0])->wstrLen == 0)
+	{
+		DiagToV8String(pvarRetValue, iMemoryManager, false, L"Первый параметр - URL: строка. От 1 до 1024 символов.");
+		return;
+	}
+
+	if (TV_VT(&paParams[1]) != VTYPE_PWSTR)
+	{
+		DiagToV8String(pvarRetValue, iMemoryManager, false, L"Второй параметр - пароль: строка. От 1 до 32 символов.");
+		return;
+	}
+	else if ((&paParams[1])->wstrLen > 32 || (&paParams[1])->wstrLen == 0)
+	{
+		DiagToV8String(pvarRetValue, iMemoryManager, false, L"Второй параметр - пароль: строка. От 1 до 32 символов.");
+		return;
+	}
+
+	wchar_t* wchFullUrlIn = nullptr;
+	convFromShortWchar(&wchFullUrlIn, (&paParams[0])->pwstrVal);
+
+	if (!wchFullUrlIn)
+	{
+		DiagToV8String(pvarRetValue, iMemoryManager, false, L"SmbLib: invalid URL\n");
+		return;
+	}
+
+	wchar_t* wchPsw = nullptr;
+	char* chPsw = nullptr;
+	convFromShortWchar(&wchPsw, (&paParams[1])->pwstrVal);
+	size_t pswSz = 0;
+
+	if (wchPsw)
+	{
+		pswSz = (wcslen(wchPsw) + 1) * sizeof(wchar_t);
+		chPsw = new char[pswSz];
+		wcstombs(chPsw, wchPsw, pswSz);
+		delete[] wchPsw;
+	}
+
+	if ((&paParams[2])->vt != VTYPE_BLOB)
+	{
+		wstringstream wssLoc;
+		wssLoc << L"Третий параметр должен быть указателем на двоичные данные.";
+		DiagToV8String(pvarRetValue, iMemoryManager, false, wssLoc.str().c_str());
+		return;
+	}
+
+	int bufSz = (&paParams[2])->strLen;
+
+	struct smb2_context* smb2;
+	smb2 = smb2_init_context();
+	if (smb2)
+	{
+		char* sFullUrl = nullptr;
+		size_t inURLsz = (wcslen(wchFullUrlIn) + 1) * sizeof(wchar_t);
+		sFullUrl = new char[inURLsz];
+		memset(sFullUrl, 0, inURLsz);
+		wcstombs(sFullUrl, wchFullUrlIn, inURLsz);
+
+		struct smb2_url* url = smb2_parse_url(smb2, sFullUrl);
+		if (url)
+		{
+			if (url->user && strlen(url->user) > 0)
+			{
+				smb2_set_user(smb2, url->user);
+			}
+
+			if (chPsw && strlen(chPsw) > 0)
+			{
+				smb2_set_password(smb2, chPsw);
+			}
+			smb2_set_security_mode(smb2, SMB2_NEGOTIATE_SIGNING_ENABLED);
+
+			if (smb2_connect_share(smb2, url->server, url->share, url->user) >= 0)
+			{
+				smb2fh* fh = nullptr;
+
+				fh = smb2_open(smb2, url->path, O_WRONLY | O_CREAT);
+				if (fh)
+				{
+					int written = smb2_write(smb2, fh, reinterpret_cast<uint8_t*>((&paParams[2])->pstrVal), (&paParams[2])->strLen);
+
+					if (written >= 0)
+					{
+						Json::Value root;
+						Json::Value v;
+						v["written"] = written;
+
+						root["Status"] = true;
+						root["Description"] = "";
+						root["Data"] = v;
+
+						Json::FastWriter fw;
+						string s_res = fw.write(root);
+						ToV8StringFromChar(s_res.c_str(), pvarRetValue, iMemoryManager);
+					}
+					else
+					{
+						stringstream err;
+						err << "SmbLib: smb2_write failed (" << smb2_get_error(smb2) << ")";
+						string strErr(err.str());
+						DiagToV8String(pvarRetValue, iMemoryManager, false, strErr.c_str());
+					}
+
+					smb2_close(smb2, fh);
+				}
+				else
+				{
+					stringstream err;
+					err << "SmbLib: smb2_open failed (" << smb2_get_error(smb2) << ")";
+					string strErr(err.str());
+					DiagToV8String(pvarRetValue, iMemoryManager, false, strErr.c_str());
+				}
+
+				smb2_disconnect_share(smb2);
+
+			}
+			else
+			{
+				stringstream err;
+				err << "SmbLib: smb2_connect_share failed (" << smb2_get_error(smb2) << ")";
+				string strErr(err.str());
+				DiagToV8String(pvarRetValue, iMemoryManager, false, strErr.c_str());
+			}
+
+			smb2_destroy_url(url);
+		}
+		else
+		{
+			stringstream err;
+			err << "SmbLib: Failed to parse url (" << smb2_get_error(smb2) << ")";
+			string strErr(err.str());
+			DiagToV8String(pvarRetValue, iMemoryManager, false, strErr.c_str());
+
+		}
+		if (sFullUrl)
+			delete[] sFullUrl;
+	}
+	else
+	{
+		DiagToV8String(pvarRetValue, iMemoryManager, false, L"SmbLib: Failed to init context");
+	}
+
+	if (wchFullUrlIn)
+		delete[] wchFullUrlIn;
+
+	if (chPsw)
+		delete[] chPsw;
+
+	smb2_destroy_context(smb2);
+	return;
+
+}
+
 bool Samba::isNumericParameter(tVariant* par)
 {
 	return par->vt == VTYPE_I4 || par->vt == VTYPE_UI4 || par->vt == VTYPE_R8;

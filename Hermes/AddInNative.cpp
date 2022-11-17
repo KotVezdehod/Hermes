@@ -397,6 +397,8 @@ long Hermes::GetNParams(const long lMethodNum)
 		return 2;
 	case eMethSmbGetFile:
 		return 5;
+	case eMethSmbPutFile:
+		return 3;
 	default:
 		return 0;
 	}
@@ -454,6 +456,7 @@ bool Hermes::HasRetVal(const long lMethodNum)
 	case eMethSqlLiteSelectBlobData:
 	case eMethSmbListCatalog:
 	case eMethSmbGetFile:
+	case eMethSmbPutFile:
 		return true;
 	default:
 		return false;
@@ -1232,6 +1235,14 @@ bool Hermes::CallAsFunc(const long lMethodNum, tVariant* pvarRetValue, tVariant*
 	{
 		Samba smb(m_iMemory);
 		smb.GetFileData(paParams, pvarRetValue);
+	}
+	return true;
+
+
+	case eMethSmbPutFile:
+	{
+		Samba smb(m_iMemory);
+		smb.PutFileData(paParams, pvarRetValue);
 	}
 	return true;
 
