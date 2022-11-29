@@ -80,6 +80,7 @@
       <Filter>smb2\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="samba.h" />
+    <ClInclude Include="RegExFor1c.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="AddIn">
@@ -261,6 +262,7 @@
       <Filter>smb2\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="samba.cpp" />
+    <ClCompile Include="RegExFor1c.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\Package\manifest.xml">

@@ -82,7 +82,9 @@ static const wchar_t* g_MethodNames[] =
 	L"SQLt_SelectBlobData",
 	L"SMB_ListCatalog",
 	L"SMB_GetFile",
-	L"SMB_PutFile"
+	L"SMB_PutFile",
+	L"REX_Match",
+	L"REX_Replace"
 
 };
 
@@ -127,7 +129,9 @@ static const wchar_t* g_MethodNamesRu[] =
 	L"СКЛт_ПрочитатьДвоичныеДанные",
 	L"SMB_ПрочитатьКаталог",
 	L"SMB_ПолучитьФайл",
-	L"SMB_ЗаписатьФайл"
+	L"SMB_ЗаписатьФайл",
+	L"REX_Совпадения",
+	L"REX_Замена"
 
 };
 
@@ -186,6 +190,8 @@ public:
 		eMethSmbListCatalog,
 		eMethSmbGetFile,
 		eMethSmbPutFile,
+		eMethRexMatch,
+		eMethRexReplace,
 		eMethLast       // Always last
 	};
 

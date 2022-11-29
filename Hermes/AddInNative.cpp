@@ -13,6 +13,7 @@
 #include "../include/IAndroidComponentHelper.h"
 #include "Json.h"
 #include "samba.h"
+#include "RegExFor1c.h"
 
 using std::string;
 using std::wstring;
@@ -399,6 +400,10 @@ long Hermes::GetNParams(const long lMethodNum)
 		return 5;
 	case eMethSmbPutFile:
 		return 3;
+	case eMethRexMatch:
+		return 2;
+	case eMethRexReplace:
+		return 3;
 	default:
 		return 0;
 	}
@@ -457,6 +462,8 @@ bool Hermes::HasRetVal(const long lMethodNum)
 	case eMethSmbListCatalog:
 	case eMethSmbGetFile:
 	case eMethSmbPutFile:
+	case eMethRexMatch:
+	case eMethRexReplace:
 		return true;
 	default:
 		return false;
@@ -1243,6 +1250,20 @@ bool Hermes::CallAsFunc(const long lMethodNum, tVariant* pvarRetValue, tVariant*
 	{
 		Samba smb(m_iMemory);
 		smb.PutFileData(paParams, pvarRetValue);
+	}
+	return true;
+
+	case eMethRexMatch:
+	{
+		RegExFor1c rex(m_iMemory);
+		rex.regexMatch(paParams, pvarRetValue);
+	}
+	return true;
+
+	case eMethRexReplace:
+	{
+		RegExFor1c rex(m_iMemory);
+		rex.regexReplace(paParams, pvarRetValue);
 	}
 	return true;
 

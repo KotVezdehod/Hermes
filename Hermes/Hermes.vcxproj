@@ -228,6 +228,7 @@
     <ClInclude Include="ConversionWchar.h" />
     <ClInclude Include="FileWorks.h" />
     <ClInclude Include="Json.h" />
+    <ClInclude Include="RegExFor1c.h" />
     <ClInclude Include="SendData.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="samba.h" />
@@ -290,6 +291,7 @@
     <ClCompile Include="ConversionWchar.cpp" />
     <ClCompile Include="FileWorks.cpp" />
     <ClCompile Include="Json.cpp" />
+    <ClCompile Include="RegExFor1c.cpp" />
     <ClCompile Include="SendData.cpp" />
     <ClCompile Include="samba.cpp" />
     <ClCompile Include="sqlite3.c" />
