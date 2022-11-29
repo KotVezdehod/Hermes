@@ -30,6 +30,7 @@ void RegExFor1c::regexMatch(tVariant* paParams, tVariant* pvarRetValue)
 
 	size_t wchTxtSz = (wcslen(wchTxt) + 1) * sizeof(wchar_t);
 	char* chTxt = new char[wchTxtSz];
+	memset(chTxt,0, wchTxtSz);
 	wcstombs(chTxt, wchTxt, wchTxtSz);
 	delete[] wchTxt;
 	std::string strTxt(chTxt);
@@ -47,8 +48,9 @@ void RegExFor1c::regexMatch(tVariant* paParams, tVariant* pvarRetValue)
 		return;
 	}
 
-	size_t wchRegExpSz = wcslen(wchRegExpr);
-	char* chRegExp = new char[(wchRegExpSz+1)*sizeof(wchar_t)];
+	size_t wchRegExpSz = (wcslen(wchRegExpr) + 1)* sizeof(wchar_t);
+	char* chRegExp = new char[wchRegExpSz];
+	memset(chRegExp,0, wchRegExpSz);
 	wcstombs(chRegExp, wchRegExpr, wchRegExpSz);
 	delete[] wchRegExpr;
 
@@ -118,6 +120,7 @@ void RegExFor1c::regexReplace(tVariant* paParams, tVariant* pvarRetValue)
 
 	size_t wchTxtSz = (wcslen(wchTxt) + 1) * sizeof(wchar_t);
 	char* chTxt = new char[wchTxtSz];
+	memset(chTxt, 0, wchTxtSz);
 	wcstombs(chTxt, wchTxt, wchTxtSz);
 	delete[] wchTxt;
 	std::string strTxt(chTxt);
@@ -135,11 +138,11 @@ void RegExFor1c::regexReplace(tVariant* paParams, tVariant* pvarRetValue)
 		return;
 	}
 
-	size_t wchRegExpSz = wcslen(wchRegExpr);
-	char* chRegExp = new char[(wchRegExpSz + 1) * sizeof(wchar_t)];
+	size_t wchRegExpSz = (wcslen(wchRegExpr) + 1) * sizeof(wchar_t);
+	char* chRegExp = new char[wchRegExpSz];
+	memset(chRegExp, 0, wchRegExpSz);
 	wcstombs(chRegExp, wchRegExpr, wchRegExpSz);
 	delete[] wchRegExpr;
-
 	std::regex regExpression(std::string(chRegExp), std::regex_constants::ECMAScript);
 	delete[] chRegExp;
 
@@ -154,8 +157,9 @@ void RegExFor1c::regexReplace(tVariant* paParams, tVariant* pvarRetValue)
 		return;
 	}
 
-	size_t wchPatternSz = wcslen(wchPattern);
-	char* chPattern = new char[(wchPatternSz + 1) * sizeof(wchar_t)];
+	size_t wchPatternSz = (wcslen(wchPattern) + 1) * sizeof(wchar_t);
+	char* chPattern = new char[wchPatternSz];
+	memset(chPattern, 0, wchPatternSz);
 	wcstombs(chPattern, wchPattern, wchPatternSz);
 	delete[] wchPattern;
 	std::string strPattern(chPattern);
@@ -163,9 +167,11 @@ void RegExFor1c::regexReplace(tVariant* paParams, tVariant* pvarRetValue)
 
 	Json::Value root;
 
+	std::string sOut = std::regex_replace(strTxt, regExpression, strPattern);
+
 	root["Status"]		= true;
 	root["Description"] = "";
-	root["Data"]		= std::regex_replace(strTxt, regExpression, strPattern);
+	root["Data"]		= sOut.c_str();
 
 	Json::FastWriter fw;
 	string s_res = fw.write(root);
