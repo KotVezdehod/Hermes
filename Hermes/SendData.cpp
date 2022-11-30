@@ -447,6 +447,39 @@ void SendData::GetLocationNow(tVariant* paParams, tVariant* pvarRetValue)
 
 #pragma endregion
 
+#pragma region QRCode_generator
+void SendData::GetQR(tVariant* paParams, tVariant* pvarRetValue)
+{
+
+	if (obj)
+	{
+
+		JNIEnv* env = getJniEnv();
+
+		jmethodID methID = env->GetMethodID(cc, "QRCodeGen", "(Ljava/lang/String;I)Ljava/lang/String;");
+
+		int len = getLenShortWcharStr((&paParams[0])->pwstrVal);
+		jstring js_text = env->NewString((&paParams[0])->pwstrVal, len);
+
+		jstring stringObject = static_cast<jstring>(env->CallObjectMethod(obj, methID, js_text, static_cast<int>(numericValue(&paParams[1]))));
+
+		wstring std_wstr = ToWStringJni(stringObject);
+
+		ToV8String(std_wstr.c_str(), pvarRetValue, loc_iMemoryManager);
+
+		env->DeleteLocalRef(stringObject);
+		env->DeleteLocalRef(js_text);
+
+	}
+	else
+	{
+		DiagStructure(false, L"JNI Error", L"", pvarRetValue, loc_iMemoryManager);
+	}
+
+	return;
+}
+#pragma endregion
+
 
 static const wchar_t g_EventSource[] = L"Hermes";
 static const wchar_t g_EventName[] = L"BroadcastCatched";

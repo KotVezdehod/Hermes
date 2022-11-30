@@ -50,4 +50,5 @@ public:
 	void StartGeolocation(tVariant* paParams, tVariant* pvarRetValue);
 	void StopGeolocation(tVariant* pvarRetValue);
 	void GetLocationNow(tVariant* paParams, tVariant* pvarRetValue);
+	void GetQR(tVariant* paParams, tVariant* pvarRetValue);
 };

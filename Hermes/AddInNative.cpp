@@ -404,6 +404,8 @@ long Hermes::GetNParams(const long lMethodNum)
 		return 2;
 	case eMethRexReplace:
 		return 3;
+	case eMethGetQR:
+		return 2;
 	default:
 		return 0;
 	}
@@ -464,6 +466,7 @@ bool Hermes::HasRetVal(const long lMethodNum)
 	case eMethSmbPutFile:
 	case eMethRexMatch:
 	case eMethRexReplace:
+	case eMethGetQR:
 		return true;
 	default:
 		return false;
@@ -1267,6 +1270,24 @@ bool Hermes::CallAsFunc(const long lMethodNum, tVariant* pvarRetValue, tVariant*
 	}
 	return true;
 
+	case eMethGetQR:
+	{
+		if (!isNumericParameter(&paParams[1]))
+			DiagToV8String(pvarRetValue, m_iMemory, false, L"Второй параметр должен быть целым числом, большим 50");
+
+		if (numericValue(&paParams[1]) < 50)
+			DiagToV8String(pvarRetValue, m_iMemory, false, L"Второй параметр должен быть целым числом, не меньшим 50");
+
+		if ((&paParams[0])->wstrLen == 0)
+			DiagToV8String(pvarRetValue, m_iMemory, false, L"Кодируемая строка не должна быть пустой");
+
+
+		m_SendData.Initialize(m_iConnect, m_iMemory);
+		m_SendData.GetQR(paParams, pvarRetValue);
+
+	}
+	return true;
+
 	default:
 		return false;
 	}
@@ -1498,7 +1519,6 @@ bool DiagStructure(bool status, const char* ch_description, const char* ch_data,
 	return true;
 
 }
-
 
 bool DiagStructure(bool status, const wchar_t *wch_description, const wchar_t *wch_data, wchar_t **out_str)
 {
