@@ -59,7 +59,7 @@ void RegExFor1c::regexMatch(tVariant* paParams, tVariant* pvarRetValue)
 
 	std::smatch m;
 
-	if (!std::regex_match(std::string(chTxt), m, regExpression))
+	if (!std::regex_match(strTxt, m, regExpression))
 	{
 		wstringstream wssLoc;
 		wssLoc << L"Вхождений не обнаружено.";
