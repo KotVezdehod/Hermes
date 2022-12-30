@@ -14,6 +14,7 @@
 #include "Json.h"
 #include "samba.h"
 #include "RegExFor1c.h"
+#include "valiJson.hpp"
 
 using std::string;
 using std::wstring;
@@ -406,6 +407,8 @@ long Hermes::GetNParams(const long lMethodNum)
 		return 3;
 	case eMethGetQR:
 		return 2;
+	case eMethJvdValidate:
+		return 2;
 	default:
 		return 0;
 	}
@@ -467,6 +470,7 @@ bool Hermes::HasRetVal(const long lMethodNum)
 	case eMethRexMatch:
 	case eMethRexReplace:
 	case eMethGetQR:
+	case eMethJvdValidate:
 		return true;
 	default:
 		return false;
@@ -1287,6 +1291,14 @@ bool Hermes::CallAsFunc(const long lMethodNum, tVariant* pvarRetValue, tVariant*
 
 	}
 	return true;
+
+	case eMethJvdValidate:
+	{
+		ValiJson jvd(m_iMemory);
+		jvd.validateJsonByScheme(paParams, pvarRetValue);
+	}
+	return true;
+
 
 	default:
 		return false;

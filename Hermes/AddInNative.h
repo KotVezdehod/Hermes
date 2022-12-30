@@ -85,7 +85,8 @@ static const wchar_t* g_MethodNames[] =
 	L"SMB_PutFile",
 	L"REX_Match",
 	L"REX_Replace",
-	L"QR_Generate"
+	L"QR_Generate",
+	L"JVD_Validate"
 
 };
 
@@ -133,7 +134,8 @@ static const wchar_t* g_MethodNamesRu[] =
 	L"SMB_ЗаписатьФайл",
 	L"REX_Совпадения",
 	L"REX_Замена",
-	L"QR_Сгенерировать"
+	L"QR_Сгенерировать",
+	L"JVD_Проверить"
 
 };
 
@@ -195,6 +197,7 @@ public:
 		eMethRexMatch,
 		eMethRexReplace,
 		eMethGetQR,
+		eMethJvdValidate,
 		eMethLast       // Always last
 	};
 

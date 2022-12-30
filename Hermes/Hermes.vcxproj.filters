@@ -81,6 +81,91 @@
     </ClInclude>
     <ClInclude Include="samba.h" />
     <ClInclude Include="RegExFor1c.h" />
+    <ClInclude Include="..\valijson\adapters\jsoncpp_adapter.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\adapters\std_string_adapter.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\constraints\basic_constraint.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\constraints\concrete_constraints.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\constraints\constraint.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\constraints\constraint_visitor.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\internal\adapter.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\internal\basic_adapter.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\internal\custom_allocator.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\internal\debug.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\internal\experimental.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\internal\frozen_value.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\internal\json_pointer.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\internal\json_reference.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\internal\optional.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\internal\optional_bundled.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\internal\uri.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\utils\file_utils.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\utils\jsoncpp_utils.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\utils\utf8_utils.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\constraint_builder.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\exceptions.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\schema.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\schema_parser.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\subschema.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\validation_results.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\validation_visitor.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\validator.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="valiJson.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="AddIn">
@@ -100,6 +185,9 @@
     </Filter>
     <Filter Include="smb2\Source Files">
       <UniqueIdentifier>{0a515f35-3b74-4909-be79-c4d30505a5e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Valijson">
+      <UniqueIdentifier>{6e7aeb13-f029-4e59-84a1-ed39f4a8686c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

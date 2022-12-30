@@ -62,7 +62,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>Gcc_4_9</PlatformToolset>
+    <PlatformToolset>Clang_5_0</PlatformToolset>
     <AndroidAPILevel>android-22</AndroidAPILevel>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -84,7 +84,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>Gcc_4_9</PlatformToolset>
+    <PlatformToolset>Clang_5_0</PlatformToolset>
     <AndroidAPILevel>android-22</AndroidAPILevel>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -129,7 +129,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalOptions>-Wno-unknown-pragmas -fexceptions %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>C:\C++\boost_1_77_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <CppLanguageStandard>c++11</CppLanguageStandard>
+      <CppLanguageStandard>c++1z</CppLanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalOptions>-lz -lm -v %(AdditionalOptions)</AdditionalOptions>
@@ -145,7 +145,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <CppLanguageStandard>c++11</CppLanguageStandard>
+      <CppLanguageStandard>c++1z</CppLanguageStandard>
       <AdditionalOptions>-Wno-unknown-pragmas -fexceptions %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -169,7 +169,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalOptions>-Wno-unknown-pragmas -fexceptions %(AdditionalOptions)</AdditionalOptions>
-      <CppLanguageStandard>c++11</CppLanguageStandard>
+      <CppLanguageStandard>c++1z</CppLanguageStandard>
       <AdditionalIncludeDirectories>C:\C++\boost_1_77_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -188,7 +188,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalOptions>-Wno-unknown-pragmas -fexceptions %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>C:\C++\boost_1_77_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <CppLanguageStandard>c++11</CppLanguageStandard>
+      <CppLanguageStandard>c++1z</CppLanguageStandard>
       <ExceptionHandling>Enabled</ExceptionHandling>
     </ClCompile>
     <Link>
@@ -223,6 +223,34 @@
     <ClInclude Include="..\smb2\slist.h" />
     <ClInclude Include="..\smb2\smb2-signing.h" />
     <ClInclude Include="..\smb2\smb3-seal.h" />
+    <ClInclude Include="..\valijson\adapters\jsoncpp_adapter.hpp" />
+    <ClInclude Include="..\valijson\adapters\std_string_adapter.hpp" />
+    <ClInclude Include="..\valijson\constraints\basic_constraint.hpp" />
+    <ClInclude Include="..\valijson\constraints\concrete_constraints.hpp" />
+    <ClInclude Include="..\valijson\constraints\constraint.hpp" />
+    <ClInclude Include="..\valijson\constraints\constraint_visitor.hpp" />
+    <ClInclude Include="..\valijson\constraint_builder.hpp" />
+    <ClInclude Include="..\valijson\exceptions.hpp" />
+    <ClInclude Include="..\valijson\internal\adapter.hpp" />
+    <ClInclude Include="..\valijson\internal\basic_adapter.hpp" />
+    <ClInclude Include="..\valijson\internal\custom_allocator.hpp" />
+    <ClInclude Include="..\valijson\internal\debug.hpp" />
+    <ClInclude Include="..\valijson\internal\experimental.hpp" />
+    <ClInclude Include="..\valijson\internal\frozen_value.hpp" />
+    <ClInclude Include="..\valijson\internal\json_pointer.hpp" />
+    <ClInclude Include="..\valijson\internal\json_reference.hpp" />
+    <ClInclude Include="..\valijson\internal\optional.hpp" />
+    <ClInclude Include="..\valijson\internal\optional_bundled.hpp" />
+    <ClInclude Include="..\valijson\internal\uri.hpp" />
+    <ClInclude Include="..\valijson\schema.hpp" />
+    <ClInclude Include="..\valijson\schema_parser.hpp" />
+    <ClInclude Include="..\valijson\subschema.hpp" />
+    <ClInclude Include="..\valijson\utils\file_utils.hpp" />
+    <ClInclude Include="..\valijson\utils\jsoncpp_utils.hpp" />
+    <ClInclude Include="..\valijson\utils\utf8_utils.hpp" />
+    <ClInclude Include="..\valijson\validation_results.hpp" />
+    <ClInclude Include="..\valijson\validation_visitor.hpp" />
+    <ClInclude Include="..\valijson\validator.hpp" />
     <ClInclude Include="AddInNative.h" />
     <ClInclude Include="Compressor.h" />
     <ClInclude Include="ConversionWchar.h" />
@@ -234,6 +262,7 @@
     <ClInclude Include="samba.h" />
     <ClInclude Include="sqlite3.h" />
     <ClInclude Include="Sqlite3_1c.h" />
+    <ClInclude Include="valiJson.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\jni\jnienv.cpp" />
