@@ -396,7 +396,7 @@ void FileWorks::ReadDataFromFile(tVariant* pvarRetValue, tVariant* paParams)
 			if (path)
 			{
 				ifstream istr;
-				istr.open(path, ios_base::binary);
+				istr.open(path);
 
 				if (istr.is_open())
 				{

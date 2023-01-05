@@ -1066,7 +1066,7 @@ namespace Json {
         /// Return the member name of the referenced Value. "" if it is not an
         /// objectValue.
         /// \deprecated This cannot be used for UTF-8 strings, since there can be embedded nulls.
-        JSONCPP_DEPRECATED("Следует использовать конструкцию: `key = name();`.")
+        JSONCPP_DEPRECATED("Use `key = name();` instead.")
             char const* memberName() const;
         /// Return the member name of the referenced Value, or NULL if it is not an
         /// objectValue.
@@ -1341,7 +1341,7 @@ namespace Json {
          *         during parsing.
          * \deprecated Use getFormattedErrorMessages() instead (typo fix).
          */
-        JSONCPP_DEPRECATED("Следует использовать getFormattedErrorMessages().")
+        JSONCPP_DEPRECATED("Use getFormattedErrorMessages() instead.")
             std::string getFormatedErrorMessages() const;
 
         /** \brief Returns a user friendly string that list errors in the parsed
@@ -2008,7 +2008,7 @@ namespace Json {
 
  // @todo <= add detail about condition in exception
 # define JSON_ASSERT(condition)                                                \
-  {if (!(condition)) {Json::throwLogicError( "Не удалось распознать JSON" );}}
+  {if (!(condition)) {Json::throwLogicError( "assert json failed" );}}
 
 # define JSON_FAIL_MESSAGE(message)                                            \
   {                                                                            \

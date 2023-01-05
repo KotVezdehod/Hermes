@@ -329,7 +329,7 @@ namespace Json {
                 token.start_ = beginDoc;
                 token.end_ = endDoc;
                 addError(
-                    "Документ JSON должен быть либо массивом, либо значением объекта.",
+                    "A valid JSON document must be either an array or an object value.",
                     token);
                 return false;
             }
@@ -342,7 +342,7 @@ namespace Json {
         // But this deprecated class has a security problem: Bad input can
         // cause a seg-fault. This seems like a fair, binary-compatible way
         // to prevent the problem.
-        if (stackDepth_g >= stackLimit_g) throwRuntimeError("Превышен допустимый stackLimit в readValue().");
+        if (stackDepth_g >= stackLimit_g) throwRuntimeError("Exceeded stackLimit in readValue().");
         ++stackDepth_g;
 
         Token token;
@@ -409,8 +409,7 @@ namespace Json {
         default:
             currentValue().setOffsetStart(token.start_ - begin_);
             currentValue().setOffsetLimit(token.end_ - begin_);
-            //return addError("Syntax error: value, object or array expected.", token);
-            return addError("Синтаксическая ошибка: ожидается значение, объект или массив.", token);
+            return addError("Syntax error: value, object or array expected.", token);
         }
 
         if (collectComments_) {
@@ -672,8 +671,7 @@ namespace Json {
             Token colon;
             if (!readToken(colon) || colon.type_ != tokenMemberSeparator) {
                 return addErrorAndRecover(
-                    //"Missing ':' after object member name", colon, tokenObjectEnd);
-                    "После имени поля пропущено ':'", colon, tokenObjectEnd);
+                    "Missing ':' after object member name", colon, tokenObjectEnd);
             }
             Value& value = currentValue()[name];
             nodes_.push(&value);
@@ -687,8 +685,7 @@ namespace Json {
                 (comma.type_ != tokenObjectEnd && comma.type_ != tokenArraySeparator &&
                     comma.type_ != tokenComment)) {
                 return addErrorAndRecover(
-                    //"Missing ',' or '}' in object declaration", comma, tokenObjectEnd);
-                    "В объявлении объекта пропущены ',' или '}'", comma, tokenObjectEnd);
+                    "Missing ',' or '}' in object declaration", comma, tokenObjectEnd);
             }
             bool finalizeTokenOk = true;
             while (comma.type_ == tokenComment && finalizeTokenOk)
@@ -697,8 +694,7 @@ namespace Json {
                 return true;
         }
         return addErrorAndRecover(
-            //"Missing '}' or object member name", tokenName, tokenObjectEnd);
-              "Проущены '}' или имя поля объекта", tokenName, tokenObjectEnd);
+            "Missing '}' or object member name", tokenName, tokenObjectEnd);
     }
 
     bool Reader::readArray(Token& tokenStart) {
@@ -731,8 +727,7 @@ namespace Json {
                 (token.type_ != tokenArraySeparator && token.type_ != tokenArrayEnd);
             if (!ok || badTokenType) {
                 return addErrorAndRecover(
-                    //"Missing ',' or ']' in array declaration", token, tokenArrayEnd);
-                      "В объявлении массива пропущены ',' или ']'", token, tokenArrayEnd);
+                    "Missing ',' or ']' in array declaration", token, tokenArrayEnd);
             }
             if (token.type_ == tokenArrayEnd)
                 break;
@@ -808,8 +803,7 @@ namespace Json {
         std::istringstream is(buffer);
         if (!(is >> value))
             return addError("'" + std::string(token.start_, token.end_) +
-                //"' is not a number.",
-                  "' не число.",
+                "' is not a number.",
                 token);
         decoded = value;
         return true;
@@ -836,8 +830,7 @@ namespace Json {
                 break;
             else if (c == '\\') {
                 if (current == end)
-                    //return addError("Empty escape sequence in string", token, current);
-                    return addError("Пустая закрывающая последовательность в строке", token, current);
+                    return addError("Empty escape sequence in string", token, current);
                 Char escape = *current++;
                 switch (escape) {
                 case '"':
@@ -871,8 +864,7 @@ namespace Json {
                     decoded += codePointToUTF8(unicode);
                 } break;
                 default:
-                    //return addError("Bad escape sequence in string", token, current);
-                    return addError("Не верная закрывающая последовательность в строке", token, current);
+                    return addError("Bad escape sequence in string", token, current);
                 }
             }
             else {
@@ -893,8 +885,7 @@ namespace Json {
             // surrogate pairs
             if (end - current < 6)
                 return addError(
-                    //"additional six characters expected to parse unicode surrogate pair.",
-                      "не хватает еще 6ти символов для разбора суррогатной пары Unicode.",
+                    "additional six characters expected to parse unicode surrogate pair.",
                     token,
                     current);
             unsigned int surrogatePair;
@@ -906,10 +897,8 @@ namespace Json {
                     return false;
             }
             else
-//                return addError("expecting another \\u token to begin the second half of "
-//                    "a unicode surrogate pair",
-
-                return addError("в начале второй части суррогатной пары Unicode ожидается \\u маркер",
+                return addError("expecting another \\u token to begin the second half of "
+                    "a unicode surrogate pair",
                     token,
                     current);
         }
@@ -922,8 +911,7 @@ namespace Json {
         unsigned int& unicode) {
         if (end - current < 4)
             return addError(
-                //"Bad unicode escape sequence in string: four digits expected.",
-                  "Не верная закрывающая последовательность unicode строки: ожидается 6 символов.",
+                "Bad unicode escape sequence in string: four digits expected.",
                 token,
                 current);
         unicode = 0;
@@ -938,8 +926,7 @@ namespace Json {
                 unicode += c - 'A' + 10;
             else
                 return addError(
-                    //"Bad unicode escape sequence in string: hexadecimal digit expected.",
-                      "Не верная закрывающая последовательность unicode строки: ожидаются шестнадцатеричные цифры.",
+                    "Bad unicode escape sequence in string: hexadecimal digit expected.",
                     token,
                     current);
         }
@@ -1012,8 +999,7 @@ namespace Json {
         int line, column;
         getLocationLineAndColumn(location, line, column);
         char buffer[18 + 16 + 16 + 1];
-        //snprintf(buffer, sizeof(buffer), "Line %d, Column %d", line, column);
-        snprintf(buffer, sizeof(buffer), "Строка %d, Колонка %d", line, column);
+        snprintf(buffer, sizeof(buffer), "Line %d, Column %d", line, column);
         return buffer;
     }
 
@@ -1033,8 +1019,7 @@ namespace Json {
             formattedMessage += "  " + error.message_ + "\n";
             if (error.extra_)
                 formattedMessage +=
-                //"See " + getLocationLineAndColumn(error.extra_) + " for detail.\n";
-                  "Подробнее смотреть " + getLocationLineAndColumn(error.extra_) + ".\n";
+                "See " + getLocationLineAndColumn(error.extra_) + " for detail.\n";
         }
         return formattedMessage;
     }
@@ -1269,8 +1254,7 @@ namespace Json {
         skipCommentTokens(token);
         if (features_.failIfExtra_) {
             if (token.type_ != tokenError && token.type_ != tokenEndOfStream) {
-                //addError("Extra non-whitespace after JSON value.", token);
-                addError("Дополнительные непробельные символы после JSON-значения.", token);
+                addError("Extra non-whitespace after JSON value.", token);
                 return false;
             }
         }
@@ -1284,8 +1268,7 @@ namespace Json {
                 token.start_ = beginDoc;
                 token.end_ = endDoc;
                 addError(
-                    //"A valid JSON document must be either an array or an object value.",
-                    "Документ JSON должен быть либо массивом, либо значением объекта.",
+                    "A valid JSON document must be either an array or an object value.",
                     token);
                 return false;
             }
@@ -1294,7 +1277,7 @@ namespace Json {
     }
 
     bool OurReader::readValue() {
-        if (stackDepth_ >= features_.stackLimit_) throwRuntimeError("Превышен stackLimit в readValue().");
+        if (stackDepth_ >= features_.stackLimit_) throwRuntimeError("Exceeded stackLimit in readValue().");
         ++stackDepth_;
         Token token;
         skipCommentTokens(token);
@@ -1384,7 +1367,7 @@ namespace Json {
         default:
             currentValue().setOffsetStart(token.start_ - begin_);
             currentValue().setOffsetLimit(token.end_ - begin_);
-            return addError("Синтаксическая ошибка: ожидается значение, объект или массив.", token);
+            return addError("Syntax error: value, object or array expected.", token);
         }
 
         if (collectComments_) {
@@ -1675,7 +1658,7 @@ namespace Json {
             Token colon;
             if (!readToken(colon) || colon.type_ != tokenMemberSeparator) {
                 return addErrorAndRecover(
-                    "Отсутствует ':' после имени члена объекта", colon, tokenObjectEnd);
+                    "Missing ':' after object member name", colon, tokenObjectEnd);
             }
             if (name.length() >= (1U << 30)) throwRuntimeError("keylength >= 2^30");
             if (features_.rejectDupKeys_ && currentValue().isMember(name)) {
@@ -1695,7 +1678,7 @@ namespace Json {
                 (comma.type_ != tokenObjectEnd && comma.type_ != tokenArraySeparator &&
                     comma.type_ != tokenComment)) {
                 return addErrorAndRecover(
-                    "Отсутствует ',' или '}' в объявлении объекта", comma, tokenObjectEnd);
+                    "Missing ',' or '}' in object declaration", comma, tokenObjectEnd);
             }
             bool finalizeTokenOk = true;
             while (comma.type_ == tokenComment && finalizeTokenOk)
@@ -1704,7 +1687,7 @@ namespace Json {
                 return true;
         }
         return addErrorAndRecover(
-            "Отсутствует '}' или имя члена объекта", tokenName, tokenObjectEnd);
+            "Missing '}' or object member name", tokenName, tokenObjectEnd);
     }
 
     bool OurReader::readArray(Token& tokenStart) {
@@ -1737,7 +1720,7 @@ namespace Json {
                 (token.type_ != tokenArraySeparator && token.type_ != tokenArrayEnd);
             if (!ok || badTokenType) {
                 return addErrorAndRecover(
-                    "Отсутствует ',' или ']' в объявлении массива", token, tokenArrayEnd);
+                    "Missing ',' or ']' in array declaration", token, tokenArrayEnd);
             }
             if (token.type_ == tokenArrayEnd)
                 break;
@@ -1813,8 +1796,7 @@ namespace Json {
 
         // Sanity check to avoid buffer overflow exploits.
         if (length < 0) {
-            //return addError("Unable to parse token length", token);
-            return addError("Не удалось разобрать длину токена", token);
+            return addError("Unable to parse token length", token);
         }
 
         // Avoid using a string constant for the format control string given to
@@ -1837,7 +1819,7 @@ namespace Json {
 
         if (count != 1)
             return addError("'" + std::string(token.start_, token.end_) +
-                "' не число.",
+                "' is not a number.",
                 token);
         decoded = value;
         return true;
@@ -1864,8 +1846,7 @@ namespace Json {
                 break;
             else if (c == '\\') {
                 if (current == end)
-                    //return addError("Empty escape sequence in string", token, current);
-                    return addError("Пустая закрывающая последовательность в строке", token, current);
+                    return addError("Empty escape sequence in string", token, current);
                 Char escape = *current++;
                 switch (escape) {
                 case '"':
@@ -1899,8 +1880,7 @@ namespace Json {
                     decoded += codePointToUTF8(unicode);
                 } break;
                 default:
-                    //return addError("Bad escape sequence in string", token, current);
-                    return addError("Не верная закрывающая последовательность в строке", token, current);
+                    return addError("Bad escape sequence in string", token, current);
                 }
             }
             else {
@@ -1921,7 +1901,7 @@ namespace Json {
             // surrogate pairs
             if (end - current < 6)
                 return addError(
-                    "не хватает еще 6ти символов для разбора суррогатной пары Unicode.",
+                    "additional six characters expected to parse unicode surrogate pair.",
                     token,
                     current);
             unsigned int surrogatePair;
@@ -1933,7 +1913,8 @@ namespace Json {
                     return false;
             }
             else
-                return addError("в начале второй части суррогатной пары Unicode ожидается \\u маркер",
+                return addError("expecting another \\u token to begin the second half of "
+                    "a unicode surrogate pair",
                     token,
                     current);
         }
@@ -1946,7 +1927,7 @@ namespace Json {
         unsigned int& unicode) {
         if (end - current < 4)
             return addError(
-                "Не верная закрывающая последовательность unicode строки: ожидается 6 символов.",
+                "Bad unicode escape sequence in string: four digits expected.",
                 token,
                 current);
         unicode = 0;
@@ -1961,7 +1942,7 @@ namespace Json {
                 unicode += c - 'A' + 10;
             else
                 return addError(
-                    "Не верная закрывающая последовательность unicode строки: ожидаются шестнадцатеричные цифры.",
+                    "Bad unicode escape sequence in string: hexadecimal digit expected.",
                     token,
                     current);
         }
@@ -2034,7 +2015,7 @@ namespace Json {
         int line, column;
         getLocationLineAndColumn(location, line, column);
         char buffer[18 + 16 + 16 + 1];
-        snprintf(buffer, sizeof(buffer), "Строка %d, Колонка %d", line, column);
+        snprintf(buffer, sizeof(buffer), "Line %d, Column %d", line, column);
         return buffer;
     }
 
@@ -2049,7 +2030,7 @@ namespace Json {
             formattedMessage += "  " + error.message_ + "\n";
             if (error.extra_)
                 formattedMessage +=
-                "Подробности: " + getLocationLineAndColumn(error.extra_) + ".\n";
+                "See " + getLocationLineAndColumn(error.extra_) + " for detail.\n";
         }
         return formattedMessage;
     }
@@ -2241,8 +2222,7 @@ namespace Json {
         bool ok = parseFromStream(b, sin, &root, &errs);
         if (!ok) {
             fprintf(stderr,
-                //"Error from reader: %s",
-                    "Error чтения: %s",
+                "Error from reader: %s",
                 errs.c_str());
 
             throwRuntimeError(errs);
@@ -2537,11 +2517,8 @@ namespace Json {
         char* newString = static_cast<char*>(malloc(length + 1));
         if (newString == NULL) {
             throwRuntimeError(
-//                "in Json::Value::duplicateStringValue(): "
-//                "Failed to allocate string value buffer");
-
-                  "Json::Value::duplicateStringValue(): "
-                  "Не удалось выделить память под буффер строки");
+                "in Json::Value::duplicateStringValue(): "
+                "Failed to allocate string value buffer");
         }
         memcpy(newString, value, length);
         newString[length] = 0;
@@ -2557,20 +2534,14 @@ namespace Json {
         // Avoid an integer overflow in the call to malloc below by limiting length
         // to a sane value.
         JSON_ASSERT_MESSAGE(length <= (unsigned)Value::maxInt - sizeof(unsigned) - 1U,
-//            "in Json::Value::duplicateAndPrefixStringValue(): "
-//            "length too big for prefixing");
-
-            "Json::Value::duplicateAndPrefixStringValue(): "
-            "Слишком большая длина для префикса");
+            "in Json::Value::duplicateAndPrefixStringValue(): "
+            "length too big for prefixing");
         unsigned actualLength = length + static_cast<unsigned>(sizeof(unsigned)) + 1U;
         char* newString = static_cast<char*>(malloc(actualLength));
         if (newString == 0) {
             throwRuntimeError(
-//                "in Json::Value::duplicateAndPrefixStringValue(): "
-//                "Failed to allocate string value buffer");
-
-                    "Json::Value::duplicateAndPrefixStringValue(): "
-                    "Не удалось выделить память под строку");
+                "in Json::Value::duplicateAndPrefixStringValue(): "
+                "Failed to allocate string value buffer");
         }
         *reinterpret_cast<unsigned*>(newString) = length;
         memcpy(newString + sizeof(unsigned), value, length);
@@ -2657,8 +2628,7 @@ namespace Json {
         JSON_ASSERT(text != 0);
         JSON_ASSERT_MESSAGE(
             text[0] == '\0' || text[0] == '/',
-            //"in Json::Value::setComment(): Comments must start with /");
-              "Json::Value::setComment(): Комментарий должен начинаться с /");
+            "in Json::Value::setComment(): Comments must start with /");
         // It seems that /**/ style comments are acceptable as well.
         comment_ = duplicateStringValue(text, len);
     }
@@ -3092,8 +3062,7 @@ namespace Json {
         case realValue:
             return valueToString(value_.real_);
         default:
-            //JSON_FAIL_MESSAGE("Type is not convertible to string");
-            JSON_FAIL_MESSAGE("Этот тип не может быть преобразован в строку");
+            JSON_FAIL_MESSAGE("Type is not convertible to string");
         }
     }
 
@@ -3110,17 +3079,14 @@ namespace Json {
     Value::Int Value::asInt() const {
         switch (type_) {
         case intValue:
-            //JSON_ASSERT_MESSAGE(isInt(), "LargestInt out of Int range");
-            JSON_ASSERT_MESSAGE(isInt(), "Значение LargestInt за пределами Int");
+            JSON_ASSERT_MESSAGE(isInt(), "LargestInt out of Int range");
             return Int(value_.int_);
         case uintValue:
-            //JSON_ASSERT_MESSAGE(isInt(), "LargestUInt out of Int range");
-            JSON_ASSERT_MESSAGE(isInt(), "Значение LargestUInt за пределами Int");
+            JSON_ASSERT_MESSAGE(isInt(), "LargestUInt out of Int range");
             return Int(value_.uint_);
         case realValue:
             JSON_ASSERT_MESSAGE(InRange(value_.real_, minInt, maxInt),
-                //"double out of Int range");
-                  "значение double за пределами Int");
+                "double out of Int range");
             return Int(value_.real_);
         case nullValue:
             return 0;
@@ -3129,23 +3095,20 @@ namespace Json {
         default:
             break;
         }
-        //JSON_FAIL_MESSAGE("Value is not convertible to Int.");
-        JSON_FAIL_MESSAGE("Значение не может быть приведено к типу Int.");
+        JSON_FAIL_MESSAGE("Value is not convertible to Int.");
     }
 
     Value::UInt Value::asUInt() const {
         switch (type_) {
         case intValue:
-            //JSON_ASSERT_MESSAGE(isUInt(), "LargestInt out of UInt range");
-            JSON_ASSERT_MESSAGE(isUInt(), "Значение LargestInt за пределами UInt");
+            JSON_ASSERT_MESSAGE(isUInt(), "LargestInt out of UInt range");
             return UInt(value_.int_);
         case uintValue:
-            JSON_ASSERT_MESSAGE(isUInt(), "Значение LargestUInt за пределами UInt");
+            JSON_ASSERT_MESSAGE(isUInt(), "LargestUInt out of UInt range");
             return UInt(value_.uint_);
         case realValue:
             JSON_ASSERT_MESSAGE(InRange(value_.real_, 0, maxUInt),
-                //"double out of UInt range");
-                  "значение double за пределами UInt");
+                "double out of UInt range");
             return UInt(value_.real_);
         case nullValue:
             return 0;
@@ -3154,8 +3117,7 @@ namespace Json {
         default:
             break;
         }
-        //JSON_FAIL_MESSAGE("Value is not convertible to UInt.");
-        JSON_FAIL_MESSAGE("Значение не может быть приведено к типу UInt.");
+        JSON_FAIL_MESSAGE("Value is not convertible to UInt.");
     }
 
 #if defined(JSON_HAS_INT64)
@@ -3165,13 +3127,11 @@ namespace Json {
         case intValue:
             return Int64(value_.int_);
         case uintValue:
-            //JSON_ASSERT_MESSAGE(isInt64(), "LargestUInt out of Int64 range");
-            JSON_ASSERT_MESSAGE(isInt64(), "Значение LargestUInt за пределами Int64");
+            JSON_ASSERT_MESSAGE(isInt64(), "LargestUInt out of Int64 range");
             return Int64(value_.uint_);
         case realValue:
             JSON_ASSERT_MESSAGE(InRange(value_.real_, minInt64, maxInt64),
-                //"double out of Int64 range");
-                "Значение double за пределами Int64");
+                "double out of Int64 range");
             return Int64(value_.real_);
         case nullValue:
             return 0;
@@ -3180,22 +3140,19 @@ namespace Json {
         default:
             break;
         }
-        //JSON_FAIL_MESSAGE("Value is not convertible to Int64.");
-        JSON_FAIL_MESSAGE("Значение не может быть приведено к типу Int64.");
+        JSON_FAIL_MESSAGE("Value is not convertible to Int64.");
     }
 
     Value::UInt64 Value::asUInt64() const {
         switch (type_) {
         case intValue:
-            //JSON_ASSERT_MESSAGE(isUInt64(), "LargestInt out of UInt64 range");
-            JSON_ASSERT_MESSAGE(isUInt64(), "Значение LargestInt за пределами UInt64");
+            JSON_ASSERT_MESSAGE(isUInt64(), "LargestInt out of UInt64 range");
             return UInt64(value_.int_);
         case uintValue:
             return UInt64(value_.uint_);
         case realValue:
             JSON_ASSERT_MESSAGE(InRange(value_.real_, 0, maxUInt64),
-                //"double out of UInt64 range");
-                   "Значение double за пределами");
+                "double out of UInt64 range");
             return UInt64(value_.real_);
         case nullValue:
             return 0;
@@ -3204,8 +3161,7 @@ namespace Json {
         default:
             break;
         }
-        //JSON_FAIL_MESSAGE("Value is not convertible to UInt64.");
-        JSON_FAIL_MESSAGE("Значение не может быть приведено к типу UInt64.");
+        JSON_FAIL_MESSAGE("Value is not convertible to UInt64.");
     }
 #endif // if defined(JSON_HAS_INT64)
 
@@ -3244,8 +3200,7 @@ namespace Json {
         default:
             break;
         }
-        //JSON_FAIL_MESSAGE("Value is not convertible to double.");
-        JSON_FAIL_MESSAGE("Значение не может быть приведено к типу double.");
+        JSON_FAIL_MESSAGE("Value is not convertible to double.");
     }
 
     float Value::asFloat() const {
@@ -3267,8 +3222,7 @@ namespace Json {
         default:
             break;
         }
-        //JSON_FAIL_MESSAGE("Value is not convertible to float.");
-        JSON_FAIL_MESSAGE("Значение не может быть приведено к типу float.");
+        JSON_FAIL_MESSAGE("Value is not convertible to float.");
     }
 
     bool Value::asBool() const {
@@ -3287,8 +3241,7 @@ namespace Json {
         default:
             break;
         }
-        //JSON_FAIL_MESSAGE("Value is not convertible to bool.");
-        JSON_FAIL_MESSAGE("Значение не может быть приведено к типу bool.");
+        JSON_FAIL_MESSAGE("Value is not convertible to bool.");
     }
 
     bool Value::isConvertibleTo(ValueType other) const {
@@ -3360,8 +3313,7 @@ namespace Json {
     void Value::clear() {
         JSON_ASSERT_MESSAGE(type_ == nullValue || type_ == arrayValue ||
             type_ == objectValue,
-            //"in Json::Value::clear(): requires complex value");
-              "Json::Value::clear(): требуется не примитивное значение");
+            "in Json::Value::clear(): requires complex value");
         start_ = 0;
         limit_ = 0;
         switch (type_) {
@@ -3376,8 +3328,7 @@ namespace Json {
 
     void Value::resize(ArrayIndex newSize) {
         JSON_ASSERT_MESSAGE(type_ == nullValue || type_ == arrayValue,
-            //"in Json::Value::resize(): requires arrayValue");
-            "Json::Value::resize(): требуется массив");
+            "in Json::Value::resize(): requires arrayValue");
         if (type_ == nullValue)
             *this = Value(arrayValue);
         ArrayIndex oldSize = size();
@@ -3396,8 +3347,7 @@ namespace Json {
     Value& Value::operator[](ArrayIndex index) {
         JSON_ASSERT_MESSAGE(
             type_ == nullValue || type_ == arrayValue,
-            //"in Json::Value::operator[](ArrayIndex): requires arrayValue");
-              "Json::Value::operator[](ArrayIndex): требуется коллекция");
+            "in Json::Value::operator[](ArrayIndex): requires arrayValue");
         if (type_ == nullValue)
             *this = Value(arrayValue);
         CZString key(index);
@@ -3413,16 +3363,14 @@ namespace Json {
     Value& Value::operator[](int index) {
         JSON_ASSERT_MESSAGE(
             index >= 0,
-            //"in Json::Value::operator[](int index): index cannot be negative");
-              "Json::Value::operator[](int index): индекс не может быть отрицательным");
+            "in Json::Value::operator[](int index): index cannot be negative");
         return (*this)[ArrayIndex(index)];
     }
 
     const Value& Value::operator[](ArrayIndex index) const {
         JSON_ASSERT_MESSAGE(
             type_ == nullValue || type_ == arrayValue,
-            //"in Json::Value::operator[](ArrayIndex)const: requires arrayValue");
-              "Json::Value::operator[](ArrayIndex)const: требуется коллекция");
+            "in Json::Value::operator[](ArrayIndex)const: requires arrayValue");
         if (type_ == nullValue)
             return nullRef;
         CZString key(index);
@@ -3435,8 +3383,7 @@ namespace Json {
     const Value& Value::operator[](int index) const {
         JSON_ASSERT_MESSAGE(
             index >= 0,
-            //"Json::Value::operator[](int index) const: index cannot be negative");
-              "Json::Value::operator[](int index) const: индекс не может быть отрицательным");
+            "in Json::Value::operator[](int index) const: index cannot be negative");
         return (*this)[ArrayIndex(index)];
     }
 
@@ -3454,8 +3401,7 @@ namespace Json {
     Value& Value::resolveReference(const char* key) {
         JSON_ASSERT_MESSAGE(
             type_ == nullValue || type_ == objectValue,
-            //"in Json::Value::resolveReference(): requires objectValue");
-              "Json::Value::resolveReference(): значение должно быть объектом");
+            "in Json::Value::resolveReference(): requires objectValue");
         if (type_ == nullValue)
             *this = Value(objectValue);
         CZString actualKey(
@@ -3475,8 +3421,7 @@ namespace Json {
     {
         JSON_ASSERT_MESSAGE(
             type_ == nullValue || type_ == objectValue,
-            //"in Json::Value::resolveReference(key, end): requires objectValue");
-            "Json::Value::resolveReference(key, end): значение должно быть объектом");
+            "in Json::Value::resolveReference(key, end): requires objectValue");
         if (type_ == nullValue)
             *this = Value(objectValue);
         CZString actualKey(
@@ -3502,8 +3447,7 @@ namespace Json {
     {
         JSON_ASSERT_MESSAGE(
             type_ == nullValue || type_ == objectValue,
-            //"in Json::Value::find(key, end, found): requires objectValue or nullValue");
-              "Json::Value::find(key, end, found): значение должно быть объектом или null");
+            "in Json::Value::find(key, end, found): requires objectValue or nullValue");
         if (type_ == nullValue) return NULL;
         CZString actualKey(key, static_cast<unsigned>(cend - key), CZString::noDuplication);
         ObjectValues::const_iterator it = value_.map_->find(actualKey);
@@ -3588,8 +3532,7 @@ namespace Json {
     Value Value::removeMember(const char* key)
     {
         JSON_ASSERT_MESSAGE(type_ == nullValue || type_ == objectValue,
-            //"in Json::Value::removeMember(): requires objectValue");
-              "Json::Value::removeMember(): значение должно быть объектом");
+            "in Json::Value::removeMember(): requires objectValue");
         if (type_ == nullValue)
             return nullRef;
 
@@ -3655,8 +3598,7 @@ namespace Json {
     Value::Members Value::getMemberNames() const {
         JSON_ASSERT_MESSAGE(
             type_ == nullValue || type_ == objectValue,
-            //"in Json::Value::getMemberNames(), value must be objectValue");
-              "Json::Value::getMemberNames(): значение должно быть объектом");
+            "in Json::Value::getMemberNames(), value must be objectValue");
         if (type_ == nullValue)
             return Value::Members();
         Members members;
@@ -5198,8 +5140,7 @@ namespace Json {
             cs = CommentStyle::None;
         }
         else {
-            //throwRuntimeError("commentStyle must be 'All' or 'None'");
-            throwRuntimeError("commentStyle должен быть 'All' или 'None'");
+            throwRuntimeError("commentStyle must be 'All' or 'None'");
         }
         std::string colonSymbol = " : ";
         if (eyc) {
