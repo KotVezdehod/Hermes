@@ -68,7 +68,6 @@ public:
 
 		if (sqlite3_exec(connection, statement, [](void* s_out, int argc, char** argv, char** azColName)
 			{
-				int i = 0;
 				Json::Value* JArrVal = (Json::Value*)s_out;
 				Json::Value v;
 				Json::Value empty;

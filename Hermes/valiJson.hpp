@@ -9,7 +9,6 @@
 #include "AddInNative.h"
 #include "Json.h"
 
-
 class ValiJson
 {
 
@@ -161,7 +160,7 @@ private:
 	void buildFullErrorMessage(valijson::ValidationResults diagObject, Json::Value* outDiag)
 	{
 		
-	    std:set<std::string> setDiag;
+	    set<std::string> setDiag;
 		size_t lastLen = 0;
 		for (const valijson::ValidationResults::Error& it : diagObject)
 		{

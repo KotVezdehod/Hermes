@@ -46,7 +46,7 @@ void Samba::ListCatalog(tVariant* paParams, tVariant* pvarRetValue)
 	wchar_t* wchPsw = nullptr;
 	char* chPsw = nullptr;
 	convFromShortWchar(&wchPsw, (&paParams[1])->pwstrVal);
-	size_t pswSz = 0;
+	unsigned long pswSz = 0;
 
 	if (wchPsw)
 	{
@@ -61,7 +61,7 @@ void Samba::ListCatalog(tVariant* paParams, tVariant* pvarRetValue)
 	if (smb2)
 	{
 		char* sFullUrl = nullptr;
-		size_t inURLsz = (wcslen(wchFullUrlIn) + 1) * sizeof(wchar_t);
+		unsigned long inURLsz = (wcslen(wchFullUrlIn) + 1) * sizeof(wchar_t);
 		sFullUrl = new char[inURLsz];
 		memset(sFullUrl, 0, inURLsz);
 		wcstombs(sFullUrl, wchFullUrlIn, inURLsz);
@@ -205,7 +205,7 @@ void Samba::ListCatalog(tVariant* paParams, tVariant* pvarRetValue)
 void Samba::GetFileData(tVariant* paParams, tVariant* pvarRetValue)
 {
 
-	size_t MAXBUF = 16 * 1024 * 1024;
+	unsigned long MAXBUF = 8388608;
 	if (TV_VT(&paParams[0]) != VTYPE_PWSTR)
 	{
 		DiagToV8String(pvarRetValue, iMemoryManager, false, L"Первый параметр - URL: строка. От 1 до 1024 символов.");
@@ -240,7 +240,7 @@ void Samba::GetFileData(tVariant* paParams, tVariant* pvarRetValue)
 	wchar_t* wchPsw = nullptr;
 	char* chPsw = nullptr;
 	convFromShortWchar(&wchPsw, (&paParams[1])->pwstrVal);
-	size_t pswSz = 0;
+	unsigned long pswSz = 0;
 
 	if (wchPsw)
 	{
@@ -253,17 +253,17 @@ void Samba::GetFileData(tVariant* paParams, tVariant* pvarRetValue)
 	if (!isNumericParameter(&paParams[2]))
 	{
 		wstringstream wssLoc;
-		wssLoc << L"Третий параметр - размер буффера: число, от 1 до " << std::to_wstring(MAXBUF) << " байт.";
+		wssLoc << L"Третий параметр - размер буффера: число, от 1 до " << std::to_wstring(MAXBUF) << L" байт.";
 		DiagToV8String(pvarRetValue, iMemoryManager, false, wssLoc.str().c_str());
 		return;
 	}
 
-	size_t bufSz = static_cast<size_t>(numericValue(&paParams[2]));
+	unsigned long bufSz = static_cast<unsigned long>(numericValue(&paParams[2]));
 
 	if (bufSz > MAXBUF || bufSz == 0)
 	{
 		wstringstream wssLoc;
-		wssLoc << L"Третий параметр - размер буффера: число, от 1 до " << std::to_wstring(MAXBUF) << " байт.";
+		wssLoc << L"Третий параметр - размер буффера: число, от 1 до " << std::to_wstring(MAXBUF) << L" байт.";
 		DiagToV8String(pvarRetValue, iMemoryManager, false, wssLoc.str().c_str());
 		return;
 	}
@@ -275,7 +275,7 @@ void Samba::GetFileData(tVariant* paParams, tVariant* pvarRetValue)
 		DiagToV8String(pvarRetValue, iMemoryManager, false, wssLoc.str().c_str());
 		return;
 	}
-	size_t startPos = static_cast<size_t>(numericValue(&paParams[3]));
+	unsigned long startPos = static_cast<unsigned long>(numericValue(&paParams[3]));
 
 
 	if ((&paParams[4])->vt != VTYPE_BLOB)
@@ -291,7 +291,7 @@ void Samba::GetFileData(tVariant* paParams, tVariant* pvarRetValue)
 	if (smb2)
 	{
 		char* sFullUrl = nullptr;
-		size_t inURLsz = (wcslen(wchFullUrlIn) + 1) * sizeof(wchar_t);
+		unsigned long inURLsz = (wcslen(wchFullUrlIn) + 1) * sizeof(wchar_t);
 		sFullUrl = new char[inURLsz];
 		memset(sFullUrl, 0, inURLsz);
 		wcstombs(sFullUrl, wchFullUrlIn, inURLsz);
@@ -413,7 +413,6 @@ void Samba::GetFileData(tVariant* paParams, tVariant* pvarRetValue)
 
 void Samba::PutFileData(tVariant* paParams, tVariant* pvarRetValue)
 {
-	size_t MAXBUF = 16 * 1024 * 1024;
 	if (TV_VT(&paParams[0]) != VTYPE_PWSTR)
 	{
 		DiagToV8String(pvarRetValue, iMemoryManager, false, L"Первый параметр - URL: строка. От 1 до 1024 символов.");
@@ -448,7 +447,7 @@ void Samba::PutFileData(tVariant* paParams, tVariant* pvarRetValue)
 	wchar_t* wchPsw = nullptr;
 	char* chPsw = nullptr;
 	convFromShortWchar(&wchPsw, (&paParams[1])->pwstrVal);
-	size_t pswSz = 0;
+	unsigned long pswSz = 0;
 
 	if (wchPsw)
 	{
@@ -465,15 +464,40 @@ void Samba::PutFileData(tVariant* paParams, tVariant* pvarRetValue)
 		DiagToV8String(pvarRetValue, iMemoryManager, false, wssLoc.str().c_str());
 		return;
 	}
+		
+	if ((&paParams[2])->strLen > 8388608)
+	{
+		wstringstream wssLoc;
+		wssLoc << L"Размер двоичных данных не должен быть больше 8388608 байт.";
+		DiagToV8String(pvarRetValue, iMemoryManager, false, wssLoc.str().c_str());
+		return;
+	}
 
-	int bufSz = (&paParams[2])->strLen;
+	if (!isNumericParameter(&paParams[3]))
+	{
+		wstringstream wssLoc;
+		wssLoc << L"Четвертый параметр 0/1 (0 - перезапись файла, 1 - дозапись файла).";
+		DiagToV8String(pvarRetValue, iMemoryManager, false, wssLoc.str().c_str());
+		return;
+	}
+
+	int mode = numericValue(&paParams[3]);
+
+	if (mode>1 || mode<0)
+	{
+		wstringstream wssLoc;
+		wssLoc << L"Четвертый параметр - целое, неотрицательное от 0 до 1 (0 - перезапись файла, 1 - дозапись файла).";
+		DiagToV8String(pvarRetValue, iMemoryManager, false, wssLoc.str().c_str());
+		return;
+	}
+	
 
 	struct smb2_context* smb2;
 	smb2 = smb2_init_context();
 	if (smb2)
 	{
 		char* sFullUrl = nullptr;
-		size_t inURLsz = (wcslen(wchFullUrlIn) + 1) * sizeof(wchar_t);
+		unsigned long inURLsz = (wcslen(wchFullUrlIn) + 1) * sizeof(wchar_t);
 		sFullUrl = new char[inURLsz];
 		memset(sFullUrl, 0, inURLsz);
 		wcstombs(sFullUrl, wchFullUrlIn, inURLsz);
@@ -496,33 +520,48 @@ void Samba::PutFileData(tVariant* paParams, tVariant* pvarRetValue)
 			{
 				smb2fh* fh = nullptr;
 
-				fh = smb2_open(smb2, url->path, O_WRONLY | O_CREAT);
+				int flags = O_WRONLY | O_CREAT | O_RDONLY;
+				if (mode)
+				{
+					flags = O_WRONLY | O_RDONLY;
+				}
+
+				fh = smb2_open(smb2, url->path, flags);
 				if (fh)
 				{
-					int written = smb2_write(smb2, fh, reinterpret_cast<uint8_t*>((&paParams[2])->pstrVal), (&paParams[2])->strLen);
-
-					if (written >= 0)
+					if (mode)
 					{
-						Json::Value root;
-						Json::Value v;
-						v["written"] = written;
-
-						root["Status"] = true;
-						root["Description"] = "";
-						root["Data"] = v;
-
-						Json::FastWriter fw;
-						string s_res = fw.write(root);
-						ToV8StringFromChar(s_res.c_str(), pvarRetValue, iMemoryManager);
-					}
-					else
-					{
-						stringstream err;
-						err << "SmbLib: smb2_write failed (" << smb2_get_error(smb2) << ")";
-						string strErr(err.str());
-						DiagToV8String(pvarRetValue, iMemoryManager, false, strErr.c_str());
+						unsigned long long curr_offs = 0;
+						struct smb2_stat_64 st;
+						smb2_fstat(smb2, fh, &st);
+						//smb2_lseek(smb2, fh, st.smb2_size, SEEK_SET, NULL);
+						smb2_lseek(smb2, fh, 0, SEEK_END, NULL);
 					}
 
+						int written = smb2_write(smb2, fh, reinterpret_cast<uint8_t*>((&paParams[2])->pstrVal), (&paParams[2])->strLen);
+
+						if (written >= 0)
+						{
+							Json::Value root;
+							Json::Value v;
+							v["written"] = written;
+
+							root["Status"] = true;
+							root["Description"] = "";
+							root["Data"] = v;
+
+							Json::FastWriter fw;
+							string s_res = fw.write(root);
+							ToV8StringFromChar(s_res.c_str(), pvarRetValue, iMemoryManager);
+						}
+						else
+						{
+							stringstream err;
+							err << "SmbLib: smb2_write failed (" << smb2_get_error(smb2) << ")";
+							string strErr(err.str());
+							DiagToV8String(pvarRetValue, iMemoryManager, false, strErr.c_str());
+						}
+					
 					smb2_close(smb2, fh);
 				}
 				else

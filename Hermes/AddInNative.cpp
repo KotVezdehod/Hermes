@@ -400,7 +400,7 @@ long Hermes::GetNParams(const long lMethodNum)
 	case eMethSmbGetFile:
 		return 5;
 	case eMethSmbPutFile:
-		return 3;
+		return 4;
 	case eMethRexMatch:
 		return 2;
 	case eMethRexReplace:
