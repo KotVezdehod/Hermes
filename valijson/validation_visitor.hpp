@@ -979,7 +979,7 @@ public:
         if (!std::regex_search(m_target.asString(), it->second)) {
             if (m_results) {
                 //m_results->pushError(m_context, "Failed to match regex specified by 'pattern' constraint.");
-                m_results->pushError(m_context, "Провалена валидация значения на соответствие выражению RegEx.");
+                m_results->pushError(m_context, "Провалена валидация значения на соответствие шаблону.");
             }
 
             return false;
